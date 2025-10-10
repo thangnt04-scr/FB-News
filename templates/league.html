@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block title %}{{ league.name }} - Football Hub{% endblock %}
+
+{% block content %}
+<!-- League Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                <li class="breadcrumb-item active">{{ league.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row" data-league-id="{{ league.id }}">
+    <div class="col-lg-8">
+        <!-- League Info -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h1 class="card-title mb-2">
+                            <i class="fas fa-trophy me-2"></i>{{ league.name }}
+                        </h1>
+                        <p class="text-muted mb-0">Country: <span class="badge bg-primary">{{ league.country_code }}</span></p>
+                    </div>
+                    <div class="text-end">
+                        <h4 class="text-primary">{{ teams|length }}</h4>
+                        <small class="text-muted">Teams</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teams Grid -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-users me-2"></i>Teams in {{ league.name }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row" id="teams-grid">
+                    {% for team in teams %}
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="card h-100 hover-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title mb-0">{{ team.name }}</h6>
+                                    {% if team.short_name %}
+                                    <span class="badge bg-secondary">{{ team.short_name }}</span>
+                                    {% endif %}
+                                </div>
+                                {% if team.stadium %}
+                                <p class="card-text text-muted small mb-2">
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{ team.stadium }}
+                                </p>
+                                {% endif %}
+                                {% if team.founded_year %}
+                                <p class="card-text text-muted small mb-3">
+                                    <i class="fas fa-calendar me-1"></i>Founded {{ team.founded_year }}
+                                </p>
+                                {% endif %}
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="{{ url_for('team_page', team_id=team.id) }}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-arrow-right me-1"></i>View Team
+                                    </a>
+                                    {% if current_user %}
+                                    <button class="btn btn-outline-danger btn-sm" onclick="toggleFavorite('team', '{{ team.id }}')">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Recent Matches -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar me-2"></i>Recent Matches
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if matches %}
+                    <div class="list-group list-group-flush">
+                        {% for match in matches[:10] %}
+                        <div class="list-group-item px-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fw-bold">{{ match.home_team }}</span>
+                                        <span class="fw-bold">{{ match.away_team }}</span>
+                                    </div>
+                                    {% if match.home_score is not none and match.away_score is not none %}
+                                    <div class="text-center">
+                                        <span class="badge bg-primary">{{ match.home_score }} - {{ match.away_score }}</span>
+                                    </div>
+                                    {% else %}
+                                    <div class="text-center">
+                                        <span class="text-muted">TBD</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <small class="text-muted d-block text-center mt-1">
+                                {{ match.match_date[:10] if match.match_date else 'TBD' }}
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-3">
+                        <i class="fas fa-calendar-times fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">No recent matches</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- League Stats -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>League Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <h4 class="text-primary">{{ teams|length }}</h4>
+                        <small class="text-muted">Teams</small>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h4 class="text-success" id="total-players">-</h4>
+                        <small class="text-muted">Players</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-info" id="total-matches">-</h4>
+                        <small class="text-muted">Matches</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-warning" id="avg-age">-</h4>
+                        <small class="text-muted">Avg Age</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Load league statistics
+async function loadLeagueStats() {
+    try {
+        const leagueId = document.querySelector('[data-league-id]')?.dataset.leagueId;
+        if (!leagueId) return;
+        
+        const [playersRes, matchesRes] = await Promise.all([
+            fetch(`/api/players?league_id=${leagueId}`),
+            fetch(`/api/matches?league_id=${leagueId}`)
+        ]);
+        
+        const players = await playersRes.json();
+        const matches = await matchesRes.json();
+        
+        const totalPlayersEl = document.getElementById('total-players');
+        const totalMatchesEl = document.getElementById('total-matches');
+        
+        if (totalPlayersEl) totalPlayersEl.textContent = players.length;
+        if (totalMatchesEl) totalMatchesEl.textContent = matches.length;
+        
+        // Calculate average age
+        const playersWithAge = players.filter(p => p.date_of_birth);
+        if (playersWithAge.length > 0) {
+            const totalAge = playersWithAge.reduce((sum, p) => {
+                const birthYear = new Date(p.date_of_birth).getFullYear();
+                const currentYear = new Date().getFullYear();
+                return sum + (currentYear - birthYear);
+            }, 0);
+            const avgAge = Math.round(totalAge / playersWithAge.length);
+            const avgAgeEl = document.getElementById('avg-age');
+            if (avgAgeEl) avgAgeEl.textContent = avgAge;
+        }
+    } catch (error) {
+        console.error('Error loading league stats:', error);
+    }
+}
+
+// Toggle favorite
+async function toggleFavorite(type, id) {
+    const isLoggedIn = document.body.dataset.userLoggedIn === 'true';
+    if (!isLoggedIn) {
+        alert('Please log in to add favorites');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/favorites/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                [type + '_id']: id
+            })
+        });
+        
+        const data = await response.json();
+        if (data.message) {
+            // Update button appearance
+            const button = event.target.closest('button');
+            button.classList.toggle('btn-outline-danger');
+            button.classList.toggle('btn-danger');
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred');
+    }
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    loadLeagueStats();
+});
+</script>
+{% endblock %}

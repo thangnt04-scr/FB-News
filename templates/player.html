@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}{{ player.name }} - Football Hub{% endblock %}
+
+{% block content %}
+<!-- Player Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('league_page', league_id=league.id) }}">{{ league.name }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('team_page', team_id=player.team_id) }}">{{ team.name }}</a></li>
+                <li class="breadcrumb-item active">{{ player.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Player Info -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="card-title mb-2">
+                            <i class="fas fa-user me-2"></i>{{ player.name }}
+                        </h1>
+                        {% if player.position %}
+                        <p class="text-muted mb-1">
+                            <i class="fas fa-futbol me-1"></i>Position: <span class="badge bg-primary">{{ player.position }}</span>
+                        </p>
+                        {% endif %}
+                        {% if player.nationality %}
+                        <p class="text-muted mb-1">
+                            <i class="fas fa-flag me-1"></i>Nationality: {{ player.nationality }}
+                        </p>
+                        {% endif %}
+                        {% if player.date_of_birth %}
+                        <p class="text-muted mb-1">
+                            <i class="fas fa-birthday-cake me-1"></i>Date of Birth: {{ player.date_of_birth[:10] }}
+                        </p>
+                        {% endif %}
+                        {% if player.shirt_number %}
+                        <p class="text-muted mb-1">
+                            <i class="fas fa-tshirt me-1"></i>Shirt Number: <span class="badge bg-secondary">#{{ player.shirt_number }}</span>
+                        </p>
+                        {% endif %}
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-users me-1"></i>Team: <a href="{{ url_for('team_page', team_id=player.team_id) }}" class="text-decoration-none">{{ team.name }}</a>
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        {% if current_user %}
+                        <button class="btn btn-outline-danger" onclick="toggleFavorite('player', '{{ player.id }}')">
+                            <i class="fas fa-heart me-1"></i>Add to Favorites
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Details -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Player Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td class="fw-bold">Full Name:</td>
+                                    <td>{{ player.name }}</td>
+                                </tr>
+                                {% if player.position %}
+                                <tr>
+                                    <td class="fw-bold">Position:</td>
+                                    <td>{{ player.position }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if player.nationality %}
+                                <tr>
+                                    <td class="fw-bold">Nationality:</td>
+                                    <td>{{ player.nationality }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if player.shirt_number %}
+                                <tr>
+                                    <td class="fw-bold">Shirt Number:</td>
+                                    <td>#{{ player.shirt_number }}</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tbody>
+                                {% if player.date_of_birth %}
+                                <tr>
+                                    <td class="fw-bold">Date of Birth:</td>
+                                    <td>{{ player.date_of_birth[:10] }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Age:</td>
+                                    <td id="player-age">-</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td class="fw-bold">Team:</td>
+                                    <td><a href="{{ url_for('team_page', team_id=player.team_id) }}" class="text-decoration-none">{{ team.name }}</a></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">League:</td>
+                                    <td><a href="{{ url_for('league_page', league_id=league.id) }}" class="text-decoration-none">{{ league.name }}</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Player Stats -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Player Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <h4 class="text-primary" id="player-age-stat">-</h4>
+                        <small class="text-muted">Age</small>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h4 class="text-success">{{ player.shirt_number or 'N/A' }}</h4>
+                        <small class="text-muted">Shirt #</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-info">{{ player.position or 'N/A' }}</h4>
+                        <small class="text-muted">Position</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-warning">{{ player.nationality or 'N/A' }}</h4>
+                        <small class="text-muted">Country</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-users me-2"></i>Team Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <h6 class="card-title">{{ team.name }}</h6>
+                    <p class="text-muted">{{ league.name }}</p>
+                    <a href="{{ url_for('team_page', team_id=player.team_id) }}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-arrow-right me-1"></i>View Team
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('team_page', team_id=player.team_id) }}" class="btn btn-outline-primary">
+                        <i class="fas fa-users me-2"></i>View Team
+                    </a>
+                    <a href="{{ url_for('league_page', league_id=league.id) }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-trophy me-2"></i>View League
+                    </a>
+                    {% if current_user %}
+                    <button class="btn btn-outline-danger" onclick="toggleFavorite('player', '{{ player.id }}')">
+                        <i class="fas fa-heart me-2"></i>Add to Favorites
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Calculate player age
+function calculateAge() {
+    const birthDate = '{{ player.date_of_birth }}';
+    if (birthDate && birthDate !== 'None') {
+        const birth = new Date(birthDate);
+        const today = new Date();
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+        
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        
+        document.getElementById('player-age').textContent = age + ' years old';
+        document.getElementById('player-age-stat').textContent = age;
+    }
+}
+
+// Toggle favorite
+async function toggleFavorite(type, id) {
+    const isLoggedIn = document.body.dataset.userLoggedIn === 'true';
+    if (!isLoggedIn) {
+        alert('Please log in to add favorites');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/favorites/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                [type + '_id']: id
+            })
+        });
+        
+        const data = await response.json();
+        if (data.message) {
+            // Update button appearance
+            const buttons = document.querySelectorAll('button[onclick*="toggleFavorite"]');
+            buttons.forEach(button => {
+                button.classList.toggle('btn-outline-danger');
+                button.classList.toggle('btn-danger');
+                button.innerHTML = button.classList.contains('btn-danger') ? 
+                    '<i class="fas fa-heart me-1"></i>Added to Favorites' : 
+                    '<i class="fas fa-heart me-1"></i>Add to Favorites';
+            });
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred');
+    }
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    calculateAge();
+});
+</script>
+{% endblock %}

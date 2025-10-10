@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Football Info{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tachometer-alt me-2"></i>Dashboard Admin</h2>
+    <div class="btn-group">
+        <button class="btn btn-primary" onclick="refreshUsers()">
+            <i class="fas fa-sync-alt me-2"></i>Làm mới
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ users|length }}</h4>
+                        <p class="mb-0">Tổng người dùng</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ users|selectattr('role', 'equalto', 'admin')|list|length }}</h4>
+                        <p class="mb-0">Admin</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-user-shield fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ users|selectattr('role', 'equalto', 'user')|list|length }}</h4>
+                        <p class="mb-0">User</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-user fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ users|selectattr('created_at', 'defined')|list|length }}</h4>
+                        <p class="mb-0">Hoạt động</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="card">
+    <div class="card-header">
+        <h5><i class="fas fa-users me-2"></i>Quản lý người dùng</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped" id="usersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Email</th>
+                        <th>Vai trò</th>
+                        <th>Ngày tạo</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <select class="form-select form-select-sm role-select" data-user-id="{{ user.id }}">
+                                <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+                                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                            </select>
+                        </td>
+                        <td>{{ user.created_at }}</td>
+                        <td>
+                            {% if user.id != current_user.id %}
+                                <button class="btn btn-danger btn-sm" onclick="deleteUser({{ user.id }}, '{{ user.username }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            {% else %}
+                                <span class="text-muted">Bạn</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa người dùng <strong id="deleteUsername"></strong>?</p>
+                <p class="text-danger">Hành động này không thể hoàn tác!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let deleteUserId = null;
+
+// Role change handler
+document.querySelectorAll('.role-select').forEach(select => {
+    select.addEventListener('change', function() {
+        const userId = this.dataset.userId;
+        const newRole = this.value;
+        
+        fetch(`/api/admin/users/${userId}/role`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ role: newRole })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Cập nhật vai trò thành công!', 'success');
+            } else {
+                showAlert('Có lỗi xảy ra: ' + data.error, 'danger');
+                // Revert selection
+                this.value = this.value === 'admin' ? 'user' : 'admin';
+            }
+        })
+        .catch(error => {
+            showAlert('Có lỗi xảy ra khi cập nhật vai trò', 'danger');
+            console.error('Error:', error);
+        });
+    });
+});
+
+// Delete user function
+function deleteUser(userId, username) {
+    deleteUserId = userId;
+    document.getElementById('deleteUsername').textContent = username;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+
+// Confirm delete
+document.getElementById('confirmDelete').addEventListener('click', function() {
+    if (deleteUserId) {
+        fetch(`/api/admin/users/${deleteUserId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Xóa người dùng thành công!', 'success');
+                location.reload();
+            } else {
+                showAlert('Có lỗi xảy ra: ' + data.error, 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('Có lỗi xảy ra khi xóa người dùng', 'danger');
+            console.error('Error:', error);
+        });
+        
+        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+    }
+});
+
+// Refresh users
+function refreshUsers() {
+    location.reload();
+}
+
+// Show alert function
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const container = document.querySelector('.container');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}{{ team.name }} - Football Hub{% endblock %}
+
+{% block content %}
+<!-- Team Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('league_page', league_id=team.league_id) }}">{{ league.name if league else 'League' }}</a></li>
+                <li class="breadcrumb-item active">{{ team.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row" data-team-id="{{ team.id }}">
+    <div class="col-lg-8">
+        <!-- Team Info -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="card-title mb-2">
+                            <i class="fas fa-users me-2"></i>{{ team.name }}
+                        </h1>
+                        {% if team.short_name %}
+                        <p class="text-muted mb-1">Short Name: <span class="badge bg-secondary">{{ team.short_name }}</span></p>
+                        {% endif %}
+                        {% if team.stadium %}
+                        <p class="text-muted mb-1">
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ team.stadium }}
+                        </p>
+                        {% endif %}
+                        {% if team.founded_year %}
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-calendar me-1"></i>Founded {{ team.founded_year }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        {% if current_user %}
+                        <button class="btn btn-outline-danger" onclick="toggleFavorite('team', '{{ team.id }}')">
+                            <i class="fas fa-heart me-1"></i>Add to Favorites
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Players Section -->
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>Squad ({{ players|length }} players)
+                    </h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button class="btn btn-outline-primary active" onclick="filterPlayers('all')">All</button>
+                        <button class="btn btn-outline-primary" onclick="filterPlayers('goalkeeper')">GK</button>
+                        <button class="btn btn-outline-primary" onclick="filterPlayers('defender')">DEF</button>
+                        <button class="btn btn-outline-primary" onclick="filterPlayers('midfielder')">MID</button>
+                        <button class="btn btn-outline-primary" onclick="filterPlayers('forward')">FWD</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row" id="players-grid">
+                    {% for player in players %}
+                    <div class="col-lg-4 col-md-6 mb-3 player-card" data-position="{{ player.position|lower if player.position else 'unknown' }}">
+                        <div class="card h-100 hover-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title mb-0">{{ player.name }}</h6>
+                                    {% if player.shirt_number %}
+                                    <span class="badge bg-primary">#{{ player.shirt_number }}</span>
+                                    {% endif %}
+                                </div>
+                                {% if player.position %}
+                                <p class="card-text text-muted small mb-1">
+                                    <i class="fas fa-futbol me-1"></i>{{ player.position }}
+                                </p>
+                                {% endif %}
+                                {% if player.nationality %}
+                                <p class="card-text text-muted small mb-2">
+                                    <i class="fas fa-flag me-1"></i>{{ player.nationality }}
+                                </p>
+                                {% endif %}
+                                {% if player.date_of_birth %}
+                                <p class="card-text text-muted small mb-3">
+                                    <i class="fas fa-birthday-cake me-1"></i>
+                                    {{ player.date_of_birth[:10] }} 
+                                    <span class="player-age" data-birthdate="{{ player.date_of_birth }}">(Loading...)</span>
+                                </p>
+                                {% endif %}
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="{{ url_for('player_page', player_id=player.id) }}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-arrow-right me-1"></i>View Profile
+                                    </a>
+                                    {% if current_user %}
+                                    <button class="btn btn-outline-danger btn-sm" onclick="toggleFavorite('player', '{{ player.id }}')">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Recent Matches -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar me-2"></i>Recent Matches
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if matches %}
+                    <div class="list-group list-group-flush">
+                        {% for match in matches[:10] %}
+                        <div class="list-group-item px-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fw-bold">{{ match.home_team }}</span>
+                                        <span class="fw-bold">{{ match.away_team }}</span>
+                                    </div>
+                                    {% if match.home_score is not none and match.away_score is not none %}
+                                    <div class="text-center">
+                                        <span class="badge bg-primary">{{ match.home_score }} - {{ match.away_score }}</span>
+                                    </div>
+                                    {% else %}
+                                    <div class="text-center">
+                                        <span class="text-muted">TBD</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <small class="text-muted d-block text-center mt-1">
+                                {{ match.match_date[:10] if match.match_date else 'TBD' }}
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-3">
+                        <i class="fas fa-calendar-times fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">No recent matches</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Team Stats -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Team Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <h4 class="text-primary">{{ players|length }}</h4>
+                        <small class="text-muted">Players</small>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h4 class="text-success" id="avg-age">-</h4>
+                        <small class="text-muted">Avg Age</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-info" id="nationalities">-</h4>
+                        <small class="text-muted">Countries</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-warning" id="positions">-</h4>
+                        <small class="text-muted">Positions</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Filter players by position
+function filterPlayers(position) {
+    const cards = document.querySelectorAll('.player-card');
+    const buttons = document.querySelectorAll('.btn-group .btn');
+    
+    // Update button states
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Filter cards
+    cards.forEach(card => {
+        const cardPosition = card.dataset.position;
+        let show = false;
+        
+        if (position === 'all') {
+            show = true;
+        } else if (position === 'goalkeeper') {
+            show = cardPosition.includes('goalkeeper') || cardPosition.includes('keeper') || cardPosition.includes('gk');
+        } else if (position === 'defender') {
+            show = cardPosition.includes('defender') || cardPosition.includes('back') || cardPosition.includes('def') || cardPosition.includes('centre-back') || cardPosition.includes('left-back') || cardPosition.includes('right-back');
+        } else if (position === 'midfielder') {
+            show = cardPosition.includes('midfielder') || cardPosition.includes('midfield') || cardPosition.includes('mid') || cardPosition.includes('central midfield') || cardPosition.includes('attacking midfield') || cardPosition.includes('defensive midfield');
+        } else if (position === 'forward') {
+            show = cardPosition.includes('forward') || cardPosition.includes('striker') || cardPosition.includes('winger') || cardPosition.includes('fwd') || cardPosition.includes('centre-forward') || cardPosition.includes('left winger') || cardPosition.includes('right winger');
+        }
+        
+        card.style.display = show ? 'block' : 'none';
+    });
+    
+    // Update player count
+    const visibleCards = document.querySelectorAll('.player-card[style*="block"], .player-card:not([style*="none"])');
+    const countElement = document.querySelector('.card-header h5');
+    if (countElement) {
+        const totalPlayers = document.querySelectorAll('.player-card').length;
+        const visibleCount = visibleCards.length;
+        if (position === 'all') {
+            countElement.innerHTML = `<i class="fas fa-user me-2"></i>Squad (${totalPlayers} players)`;
+        } else {
+            countElement.innerHTML = `<i class="fas fa-user me-2"></i>Squad (${visibleCount}/${totalPlayers} players)`;
+        }
+    }
+}
+
+// Calculate team statistics
+async function calculateTeamStats() {
+    try {
+        const teamId = document.querySelector('[data-team-id]')?.dataset.teamId;
+        if (!teamId) return;
+        
+        const response = await fetch(`/api/players?team_id=${teamId}`);
+        const playersData = await response.json();
+        
+        // Calculate average age
+        const playersWithAge = playersData.filter(p => p.date_of_birth);
+        if (playersWithAge.length > 0) {
+            const totalAge = playersWithAge.reduce((sum, p) => {
+                const birthYear = new Date(p.date_of_birth).getFullYear();
+                const currentYear = new Date().getFullYear();
+                return sum + (currentYear - birthYear);
+            }, 0);
+            const avgAge = Math.round(totalAge / playersWithAge.length);
+            const avgAgeEl = document.getElementById('avg-age');
+            if (avgAgeEl) avgAgeEl.textContent = avgAge;
+        }
+        
+        // Count unique nationalities
+        const nationalities = new Set(playersData.filter(p => p.nationality).map(p => p.nationality));
+        const nationalitiesEl = document.getElementById('nationalities');
+        if (nationalitiesEl) nationalitiesEl.textContent = nationalities.size;
+        
+        // Count unique positions
+        const positions = new Set(playersData.filter(p => p.position).map(p => p.position));
+        const positionsEl = document.getElementById('positions');
+        if (positionsEl) positionsEl.textContent = positions.size;
+    } catch (error) {
+        console.error('Error calculating team stats:', error);
+    }
+}
+
+// Toggle favorite
+async function toggleFavorite(type, id) {
+    const isLoggedIn = document.body.dataset.userLoggedIn === 'true';
+    if (!isLoggedIn) {
+        alert('Please log in to add favorites');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/favorites/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                [type + '_id']: id
+            })
+        });
+        
+        const data = await response.json();
+        if (data.message) {
+            // Update button appearance
+            const button = event.target.closest('button');
+            button.classList.toggle('btn-outline-danger');
+            button.classList.toggle('btn-danger');
+            button.innerHTML = button.classList.contains('btn-danger') ? 
+                '<i class="fas fa-heart me-1"></i>Added to Favorites' : 
+                '<i class="fas fa-heart me-1"></i>Add to Favorites';
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred');
+    }
+}
+
+// Calculate player ages
+function calculatePlayerAges() {
+    const ageElements = document.querySelectorAll('.player-age');
+    ageElements.forEach(element => {
+        const birthDate = element.dataset.birthdate;
+        if (birthDate) {
+            const age = calculateAge(birthDate);
+            element.textContent = `(${age} years old)`;
+        }
+    });
+}
+
+// Calculate age from birthdate
+function calculateAge(birthDate) {
+    const birth = new Date(birthDate);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--;
+    }
+    
+    return age;
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    calculateTeamStats();
+    calculatePlayerAges();
+});
+</script>
+{% endblock %}

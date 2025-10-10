@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}Football Hub - Your Ultimate Football Data Center{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section bg-primary text-white rounded-3 p-5 mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <h1 class="display-4 fw-bold mb-3">
+                <i class="fas fa-futbol me-3"></i>Welcome to Football Hub
+            </h1>
+            <p class="lead mb-4">Discover comprehensive football data, statistics, and insights from top leagues around the world.</p>
+            <div class="d-flex gap-3">
+                <a href="#leagues" class="btn btn-light btn-lg">
+                    <i class="fas fa-trophy me-2"></i>Explore Leagues
+                </a>
+                <a href="#recent-matches" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-calendar me-2"></i>Recent Matches
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 text-center">
+            <i class="fas fa-futbol fa-10x opacity-75"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-5">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-trophy fa-2x mb-2"></i>
+                <h3 class="card-title">{{ stats.leagues }}</h3>
+                <p class="card-text">Leagues</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-2x mb-2"></i>
+                <h3 class="card-title" id="total-teams">{{ stats.teams }}</h3>
+                <p class="card-text">Teams</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-user fa-2x mb-2"></i>
+                <h3 class="card-title" id="total-players">{{ stats.players }}</h3>
+                <p class="card-text">Players</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar fa-2x mb-2"></i>
+                <h3 class="card-title" id="total-matches">{{ stats.matches }}</h3>
+                <p class="card-text">Matches</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leagues Section -->
+<section id="leagues" class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-trophy me-2"></i>Football Leagues</h2>
+        <div class="btn-group" role="group">
+            <button class="btn btn-outline-primary active" onclick="filterLeagues('all')">All</button>
+            <button class="btn btn-outline-primary" onclick="filterLeagues('europe')">Europe</button>
+            <button class="btn btn-outline-primary" onclick="filterLeagues('americas')">Americas</button>
+        </div>
+    </div>
+    
+    <div class="row" id="leagues-grid">
+        {% for league in leagues %}
+        <div class="col-lg-4 col-md-6 mb-4 league-card" data-country="{{ league.country_code }}" data-league-id="{{ league.id }}">
+            <div class="card h-100 shadow-sm hover-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title mb-0">{{ league.name }}</h5>
+                        <span class="badge bg-primary">{{ league.country_code }}</span>
+                    </div>
+                    <p class="card-text text-muted">Explore teams, players, and matches from {{ league.name }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('league_page', league_id=league.id) }}" class="btn btn-primary">
+                            <i class="fas fa-arrow-right me-1"></i>View Details
+                        </a>
+                        <small class="text-muted team-count">Loading...</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Recent Matches Section -->
+<section id="recent-matches" class="mb-5">
+    <h2 class="mb-4"><i class="fas fa-calendar me-2"></i>Recent Matches</h2>
+    
+    {% if recent_matches %}
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>League</th>
+                            <th>Match</th>
+                            <th>Score</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for match in recent_matches %}
+                        <tr>
+                            <td>
+                                <span class="badge bg-secondary">{{ match.league_name }}</span>
+                            </td>
+                            <td>
+                                <strong>{{ match.home_team }}</strong> vs <strong>{{ match.away_team }}</strong>
+                            </td>
+                            <td>
+                                {% if match.home_score is not none and match.away_score is not none %}
+                                    <span class="badge bg-primary">{{ match.home_score }} - {{ match.away_score }}</span>
+                                {% else %}
+                                    <span class="text-muted">TBD</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ match.match_date[:10] if match.match_date else 'TBD' }}</small>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">No recent matches found</h5>
+        <p class="text-muted">Check back later for the latest match results!</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load statistics
+async function loadStats() {
+    try {
+        const [teamsRes, playersRes, matchesRes] = await Promise.all([
+            fetch('/api/teams'),
+            fetch('/api/players'),
+            fetch('/api/matches')
+        ]);
+        
+        const teams = await teamsRes.json();
+        const players = await playersRes.json();
+        const matches = await matchesRes.json();
+        
+        document.getElementById('total-teams').textContent = teams.length;
+        document.getElementById('total-players').textContent = players.length;
+        document.getElementById('total-matches').textContent = matches.length;
+    } catch (error) {
+        console.error('Error loading stats:', error);
+    }
+}
+
+// Load team counts for each league
+async function loadLeagueStats() {
+    const leagueCards = document.querySelectorAll('.league-card');
+    
+    for (const card of leagueCards) {
+        const leagueId = card.dataset.leagueId;
+        if (!leagueId) continue;
+        
+        try {
+            const response = await fetch(`/api/teams?league_id=${leagueId}`);
+            const teams = await response.json();
+            const countElement = card.querySelector('.team-count');
+            if (countElement) {
+                countElement.textContent = `${teams.length} teams`;
+            }
+        } catch (error) {
+            const countElement = card.querySelector('.team-count');
+            if (countElement) {
+                countElement.textContent = 'Error';
+            }
+        }
+    }
+}
+
+// Filter leagues by region
+function filterLeagues(region) {
+    const cards = document.querySelectorAll('.league-card');
+    const buttons = document.querySelectorAll('.btn-group .btn');
+    
+    // Update button states
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Filter cards
+    cards.forEach(card => {
+        const country = card.dataset.country;
+        let show = false;
+        
+        switch(region) {
+            case 'all':
+                show = true;
+                break;
+            case 'europe':
+                show = ['PL', 'PD', 'SA', 'BL1', 'FL1', 'PPL', 'DED', 'GB', 'ES', 'IT', 'DE', 'FR', 'PT', 'NL'].includes(country);
+                break;
+            case 'americas':
+                show = ['BSA', 'MLS', 'Liga MX', 'US', 'BR', 'AR', 'MX'].includes(country);
+                break;
+        }
+        
+        card.style.display = show ? 'block' : 'none';
+    });
+    
+    // Update visible count
+    const visibleCards = document.querySelectorAll('.league-card[style*="block"], .league-card:not([style*="none"])');
+    console.log(`Showing ${visibleCards.length} leagues for region: ${region}`);
+}
+
+// Quick search functionality
+let searchTimeout;
+document.getElementById('quick-search').addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        if (this.value.length >= 2) {
+            performQuickSearch();
+        } else {
+            document.getElementById('search-results').innerHTML = '';
+        }
+    }, 300);
+});
+
+async function performQuickSearch() {
+    const query = document.getElementById('quick-search').value;
+    if (query.length < 2) return;
+    
+    try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const results = await response.json();
+        
+        const resultsDiv = document.getElementById('search-results');
+        if (results.length === 0) {
+            resultsDiv.innerHTML = '<p class="text-muted">No results found</p>';
+            return;
+        }
+        
+        let html = '<div class="list-group">';
+        results.forEach(result => {
+            const icon = result.type === 'team' ? 'users' : 'user';
+            const url = result.type === 'team' ? `/team/${result.id}` : `/player/${result.id}`;
+            const subtitle = result.type === 'team' 
+                ? (result.league_name || result.venue || 'Team')
+                : (result.team_name || result.position || 'Player');
+            html += `
+                <a href="${url}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-${icon} me-2"></i>
+                    <strong>${result.name}</strong>
+                    <small class="text-muted d-block">${subtitle}</small>
+                </a>
+            `;
+        });
+        html += '</div>';
+        
+        resultsDiv.innerHTML = html;
+    } catch (error) {
+        console.error('Search error:', error);
+        document.getElementById('search-results').innerHTML = '<p class="text-danger">Search failed</p>';
+    }
+}
+
+// Load leagues dropdown
+async function loadLeagues() {
+    try {
+        const response = await fetch('/api/leagues');
+        const leagues = await response.json();
+        
+        const dropdown = document.getElementById('leagues-dropdown');
+        dropdown.innerHTML = '';
+        
+        leagues.forEach(league => {
+            const li = document.createElement('li');
+            li.innerHTML = `<a class="dropdown-item" href="/league/${league.id}">${league.name}</a>`;
+            dropdown.appendChild(li);
+        });
+    } catch (error) {
+        console.error('Error loading leagues:', error);
+    }
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    loadStats();
+    loadLeagueStats();
+    loadLeagues();
+});
+</script>
+{% endblock %}
