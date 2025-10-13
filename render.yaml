@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: football-info
+    env: docker
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: FLASK_SECRET_KEY
+        sync: false
+      - key: FOOTBALL_DATA_API_KEY
+        sync: false
+      - key: FOOTBALL_DB
+        value: /data/footballinfor.db
+      - key: CREATE_DEFAULT_USERS
+        value: "1"
+    dockerCommand: "/entrypoint.sh"
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1

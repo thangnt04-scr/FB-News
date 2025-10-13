@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+
+# SQLite DB
+footballinfor.db
+*.sqlite
+*.sqlite3
+
+# Env
+.env
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build
+build/
+dist/
+
+# Node (if any)
+node_modules/

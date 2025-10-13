@@ -1,9 +1,9 @@
 # app.py
-from flask import Flask, render_template, jsonify, g, request, redirect, url_for, flash
+from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-import db, sqlite3
+import db
 import auth
-from decorators import admin_required, login_required_custom, user_or_admin_required
+from decorators import admin_required, login_required_custom
 import os
 from dotenv import load_dotenv
 
