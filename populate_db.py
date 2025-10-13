@@ -243,15 +243,15 @@ def populate_matches():
 def create_admin_user():
     """Create default admin user"""
     print("\n👨‍💼 Creating Admin User...")
-    
+
     conn = get_db_connection()
     cur = conn.cursor()
-    
+
     try:
-        # Simple password hash (in production, use proper hashing like bcrypt)
-        import hashlib
-        password_hash = hashlib.sha256('admin123'.encode()).hexdigest()
-        
+        # Use werkzeug password hashing (same as app.py)
+        from werkzeug.security import generate_password_hash
+        password_hash = generate_password_hash('admin123')
+
         cur.execute('''
             INSERT OR REPLACE INTO users (id, username, email, password_hash, role)
             VALUES (?, ?, ?, ?, ?)
