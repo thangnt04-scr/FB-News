@@ -1,0 +1,220 @@
+Run started:2025-10-13 14:06:43.632965
+
+Test results:
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random
+   Location: .\add_missing_players.py:58:22
+57	        # Tạo 20-30 cầu thủ mẫu cho mỗi đội
+58	        num_players = random.randint(20, 30)
+59	        
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random
+   Location: .\add_missing_players.py:61:25
+60	        for i in range(num_players):
+61	            first_name = random.choice(first_names)
+62	            last_name = random.choice(last_names)
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random
+   Location: .\add_missing_players.py:62:24
+61	            first_name = random.choice(first_names)
+62	            last_name = random.choice(last_names)
+63	            full_name = f"{first_name} {last_name}"
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random
+   Location: .\add_missing_players.py:64:23
+63	            full_name = f"{first_name} {last_name}"
+64	            position = random.choice(positions)
+65	            nationality = random.choice(nationalities)
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random
+   Location: .\add_missing_players.py:65:26
+64	            position = random.choice(positions)
+65	            nationality = random.choice(nationalities)
+66	            shirt_number = random.randint(1, 99)
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random
+   Location: .\add_missing_players.py:66:27
+65	            nationality = random.choice(nationalities)
+66	            shirt_number = random.randint(1, 99)
+67	            
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random
+   Location: .\add_missing_players.py:69:25
+68	            # Tạo ngày sinh ngẫu nhiên (18-35 tuổi)
+69	            birth_year = random.randint(1988, 2005)
+70	            birth_month = random.randint(1, 12)
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random
+   Location: .\add_missing_players.py:70:26
+69	            birth_year = random.randint(1988, 2005)
+70	            birth_month = random.randint(1, 12)
+71	            birth_day = random.randint(1, 28)
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_calls.html#b311-random
+   Location: .\add_missing_players.py:71:24
+70	            birth_month = random.randint(1, 12)
+71	            birth_day = random.randint(1, 28)
+72	            birthdate = f"{birth_year}-{birth_month:02d}-{birth_day:02d}"
+
+--------------------------------------------------
+>> Issue: [B104:hardcoded_bind_all_interfaces] Possible binding to all interfaces.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-605 (https://cwe.mitre.org/data/definitions/605.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/plugins/b104_hardcoded_bind_all_interfaces.html
+   Location: .\app.py:336:17
+335	    debug = os.getenv('FLASK_ENV', 'production') != 'production'
+336	    app.run(host='0.0.0.0', port=port, debug=debug)
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'admin123'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/plugins/b105_hardcoded_password_string.html
+   Location: .\create_admin.py:9:21
+8	    admin_email = "admin@football.com"
+9	    admin_password = "admin123"
+10	    
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'user123'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/plugins/b105_hardcoded_password_string.html
+   Location: .\create_admin.py:33:20
+32	    test_email = "user@football.com"
+33	    test_password = "user123"
+34	    
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/plugins/b608_hardcoded_sql_expressions.html
+   Location: .\quick_check.py:27:34
+26	                if table in tables:
+27	                    cur.execute(f"SELECT COUNT(*) FROM {table}")
+28	                    count = cur.fetchone()[0]
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html
+   Location: .\services\football_api.py:30:8
+29	    time.sleep(API_DELAY)
+30	    r = requests.get(url, headers=HEADERS, params=params)
+31	    r.raise_for_status()
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html
+   Location: .\sync_players.py:22:8
+21	    time.sleep(API_DELAY)
+22	    r = requests.get(url, headers=HEADERS, params=params)
+23	    r.raise_for_status()
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html
+   Location: .\test_system.py:15:19
+14	    try:
+15	        response = requests.get(base_url)
+16	        if response.status_code == 200:
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html
+   Location: .\test_system.py:27:19
+26	    try:
+27	        response = requests.get(f"{base_url}/api/leagues")
+28	        if response.status_code == 200:
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html
+   Location: .\test_system.py:39:19
+38	    try:
+39	        response = requests.get(f"{base_url}/api/search?q=Manchester")
+40	        if response.status_code == 200:
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html
+   Location: .\test_system.py:82:19
+81	    try:
+82	        response = requests.get(f"{base_url}/team/1")
+83	        if response.status_code == 200:
+
+--------------------------------------------------
+>> Issue: [B113:request_without_timeout] Call to requests without timeout
+   Severity: Medium   Confidence: Low
+   CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
+   More Info: https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html
+   Location: .\test_system.py:93:19
+92	    try:
+93	        response = requests.get(f"{base_url}/league/1")
+94	        if response.status_code == 200:
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 1572
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 11
+		Medium: 9
+		High: 0
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 7
+		Medium: 4
+		High: 9
+Files skipped (0):

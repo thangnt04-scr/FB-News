@@ -2,12 +2,13 @@ name: DevSecOps CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, cicd-pipeline ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, cicd-pipeline ]
   schedule:
     # Run security scans weekly
     - cron: '0 0 * * 0'
+  workflow_dispatch:  # Allow manual trigger
 
 env:
   DOCKER_IMAGE: football-app
@@ -265,15 +266,15 @@ jobs:
         name: security-summary
         path: security-summary.json
 
-  # Job 6: Deploy to Render (only on main branch)
+  # Job 6: Deploy to Render (on cicd-pipeline branch)
   deploy:
     name: Deploy to Render
     runs-on: ubuntu-latest
     needs: [security-summary]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/cicd-pipeline' && github.event_name == 'push'
     environment:
       name: production
-      url: https://football-app.onrender.com
+      url: https://fb-news.onrender.com
 
     steps:
     - name: Checkout code

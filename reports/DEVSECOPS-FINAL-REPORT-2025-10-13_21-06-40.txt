@@ -1,0 +1,54 @@
+﻿================================================================
+            DEVSECOPS SECURITY SCAN REPORT
+================================================================
+
+SCAN DATE: 2025-10-13 21:07:05
+PROJECT: Football Information System
+BRANCH: cicd-pipeline
+COMMIT: f908d52
+
+================================================================
+SCAN SUMMARY
+================================================================
+
+1. BANDIT (SAST - Static Application Security Testing)
+   - Tool: Bandit v1.8.6
+   - Target: Python source code
+   - Report: bandit-report-2025-10-13_21-06-40.json
+   - Status: Completed
+
+2. SAFETY (Dependency Vulnerability Scan)
+   - Tool: Safety v3.6.2
+   - Target: Python dependencies
+   - Report: safety-report-2025-10-13_21-06-40.json
+   - Status: Failed
+
+3. TRIVY (Container Security Scan)
+   - Tool: Trivy v0.67.2
+   - Target: Docker image (football-app:latest)
+   - Report: trivy-report-2025-10-13_21-06-40.json
+   - Status: Completed
+
+================================================================
+DETAILED REPORTS
+================================================================
+
+All reports are available in the 'reports/' directory:
+- bandit-report-2025-10-13_21-06-40.json
+- bandit-report-2025-10-13_21-06-40.txt
+- safety-report-2025-10-13_21-06-40.json
+- safety-report-2025-10-13_21-06-40.txt
+- trivy-report-2025-10-13_21-06-40.json
+- trivy-report-2025-10-13_21-06-40.txt
+
+================================================================
+NEXT STEPS
+================================================================
+
+1. Review all reports in the 'reports/' directory
+2. Fix any HIGH or CRITICAL vulnerabilities
+3. Update dependencies if needed
+4. Re-run scans to verify fixes
+5. Commit and push to trigger CI/CD pipeline
+
+================================================================
