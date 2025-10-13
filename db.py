@@ -3,7 +3,12 @@ import os
 import sqlite3
 from pathlib import Path
 
-DB_PATH = os.environ.get("FOOTBALL_DB", str(Path(__file__).with_name("footballinfor.db")))
+# Use /tmp for database on Render (ephemeral but writable)
+# In production, should use PostgreSQL instead of SQLite
+if os.environ.get('RENDER'):
+    DB_PATH = '/tmp/footballinfor.db'
+else:
+    DB_PATH = os.environ.get("FOOTBALL_DB", str(Path(__file__).with_name("footballinfor.db")))
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH, detect_types=sqlite3.PARSE_DECLTYPES)
@@ -13,6 +18,7 @@ def get_db_connection():
     return conn
 
 def init_db():
+    print(f"Initializing database at: {DB_PATH}")
     conn = get_db_connection()
     cur = conn.cursor()
     cur.executescript("""
@@ -70,6 +76,8 @@ def init_db():
     """)
     conn.commit()
     conn.close()
+    print(f"Database initialized successfully at: {DB_PATH}")
+    print("Tables created: leagues, teams, players, matches, users")
 
 # Upsert helpers (simple patterns)
 def upsert_league(external_id, name, country_code):

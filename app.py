@@ -14,7 +14,13 @@ app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', '4298703a446bbf0d3c91a79c8ed938731557f31c201578a970cdf0367d1b27dc')
 
 # Initialize database on app startup
+print("=" * 50)
+print("Starting Football Information System")
+print(f"Environment: {os.getenv('FLASK_ENV', 'development')}")
+print(f"Port: {os.getenv('PORT', '5000')}")
+print("=" * 50)
 db.init_db()
+print("=" * 50)
 
 # Flask-Login setup
 login_manager = LoginManager()
