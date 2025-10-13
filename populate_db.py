@@ -25,7 +25,9 @@ HEADERS = {'X-Auth-Token': API_KEY}
 REQUEST_DELAY = 6  # seconds between requests
 
 # Configuration: Fetch ALL data or limited data
-FETCH_ALL_DATA = True  # Set to True to fetch all teams, players, matches
+# For Render deployment, use limited data to avoid build timeout (15 min limit)
+# For local development, set to True to fetch all data
+FETCH_ALL_DATA = os.getenv('FETCH_ALL_DATA', 'False') == 'True'
 
 def make_api_request(endpoint):
     """Make API request with rate limiting and error handling"""
