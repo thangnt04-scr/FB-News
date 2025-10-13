@@ -2,6 +2,41 @@
 
 Hệ thống thông tin bóng đá toàn diện với chức năng đăng nhập phân quyền, quản lý dữ liệu từ các giải đấu hàng đầu thế giới.
 
+## 🔒 DevSecOps Implementation
+
+**Branch:** `cicd-pipeline`
+**Status:** ✅ Production Ready
+
+### **Security Features:**
+- ✅ **SAST** - Bandit code scanning
+- ✅ **Dependency Scan** - Safety vulnerability check
+- ✅ **Container Scan** - Trivy image scanning
+- ✅ **CI/CD Pipeline** - Automated security gates
+- ✅ **Docker** - Production-ready with security hardening
+- ✅ **Auto-Deploy** - Render.com integration
+
+### **Quick Start:**
+```bash
+# Run security scans
+.\run-devsecops-scans.ps1
+
+# Build and run with Docker
+docker-compose up -d
+
+# View at http://localhost:5000
+```
+
+### **Documentation:**
+- 📖 [Quick Start Guide](QUICK-START.md)
+- 📖 [Render Deployment Guide](RENDER-DEPLOYMENT-GUIDE.md)
+- 📖 [Complete DevSecOps Report](DEVSECOPS-COMPLETE-REPORT.md)
+- 📖 [Implementation Summary](IMPLEMENTATION-SUMMARY.md)
+
+### **Links:**
+- 🔗 [GitHub Actions](https://github.com/thangnt04-scr/FB-News/actions)
+- 🔗 [Security Reports](reports/)
+- 🔗 [Live Demo](https://fb-news.onrender.com) (Coming soon)
+
 ## 🎯 Tính năng chính
 
 ### 👥 Cho tất cả người dùng:
