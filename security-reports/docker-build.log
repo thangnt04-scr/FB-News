@@ -1,0 +1,61 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.98kB 0.0s done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/python:3.11-slim
+#2 ...
+
+#3 [auth] library/python:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.11-slim
+#2 DONE 2.5s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 916B done
+#4 DONE 0.0s
+
+#5 [1/7] FROM docker.io/library/python:3.11-slim@sha256:5e9093a415c674b51e705d42dde4dd6aad8c132dab6ca3e81ecd5cbbe3689bd2
+#5 resolve docker.io/library/python:3.11-slim@sha256:5e9093a415c674b51e705d42dde4dd6aad8c132dab6ca3e81ecd5cbbe3689bd2 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 6.24MB 0.6s done
+#6 DONE 0.6s
+
+#7 [4/7] COPY requirements.txt .
+#7 CACHED
+
+#8 [2/7] WORKDIR /app
+#8 CACHED
+
+#9 [3/7] RUN apt-get update && apt-get install -y --no-install-recommends     gcc     curl     && rm -rf /var/lib/apt/lists/*     && apt-get clean
+#9 CACHED
+
+#10 [5/7] RUN pip install --no-cache-dir --upgrade pip &&     pip install --no-cache-dir -r requirements.txt
+#10 CACHED
+
+#11 [6/7] COPY . .
+#11 DONE 0.1s
+
+#12 [7/7] RUN groupadd -r appuser -g 1000 &&     useradd -r -u 1000 -g appuser appuser &&     chown -R appuser:appuser /app &&     chmod -R 755 /app
+#12 0.498 useradd warning: appuser's uid 1000 is greater than SYS_UID_MAX 999
+#12 DONE 0.6s
+
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 0.3s done
+#13 exporting manifest sha256:7961c3c6051431cb6f6e3f101e43c5af9c7e4fb7cf1af006b6b8bc99c71e6d24 0.1s done
+#13 exporting config sha256:4828356fa3a530081f8a3ff6a5ebdbec43adb6c9310275e9cc6aeb8fe49e2b47 0.0s done
+#13 exporting attestation manifest sha256:468ddf9622125a5ac66e2a84d93cad30b045ef03a436d25914d3bb8e6e9f74b2
+#13 exporting attestation manifest sha256:468ddf9622125a5ac66e2a84d93cad30b045ef03a436d25914d3bb8e6e9f74b2 0.1s done
+#13 exporting manifest list sha256:03b7267b963164ad48f283921a3edf60f387aacc599ca2645afae2038bb2ab07 0.1s done
+#13 naming to docker.io/library/football-app:latest
+#13 naming to docker.io/library/football-app:latest done
+#13 unpacking to docker.io/library/football-app:latest
+#13 unpacking to docker.io/library/football-app:latest 0.2s done
+#13 DONE 0.9s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/a7c70cqds45t0nurgiuuasstl
