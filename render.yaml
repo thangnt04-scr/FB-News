@@ -14,5 +14,11 @@ services:
         value: production
       - key: SECRET_KEY
         generateValue: true
+      - key: RENDER
+        value: "true"
+      - key: FOOTBALL_DATA_API_KEY
+        value: 714b8b0227af4ae7bec7cd46e191cf3a
+      - key: FETCH_ALL_DATA
+        value: "False"
     healthCheckPath: /
 
