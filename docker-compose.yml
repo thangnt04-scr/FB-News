@@ -1,0 +1,23 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: football-info:web
+    environment:
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY:-dev-insecure-secret}
+      - FOOTBALL_DB=/data/footballinfor.db
+      - FOOTBALL_DATA_API_KEY=${FOOTBALL_DATA_API_KEY:-}
+      - CREATE_DEFAULT_USERS=${CREATE_DEFAULT_USERS:-1}
+    ports:
+      - "5000:5000"
+    volumes:
+      - app-data:/data
+    command: ["python", "-u", "app.py"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:5000').status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+volumes:
+  app-data:

@@ -1,12 +1,14 @@
 # app.py
 from flask import Flask, render_template, jsonify, g, request, redirect, url_for, flash
+import os
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import db, sqlite3
 import auth
 from decorators import admin_required, login_required_custom, user_or_admin_required
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-change-this-in-production'
+# Read secret key from environment; falls back to insecure default for dev
+app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'dev-insecure-secret-change-me')
 
 # Flask-Login setup
 login_manager = LoginManager()
@@ -311,4 +313,8 @@ def api_delete_user(user_id):
 
 if __name__ == "__main__":
     db.init_db()
-    app.run(debug=True, port=5000)
+    app.run(
+        debug=os.getenv("FLASK_DEBUG", "1") == "1",
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", "5000")),
+    )
