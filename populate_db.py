@@ -24,6 +24,9 @@ HEADERS = {'X-Auth-Token': API_KEY}
 # Rate limiting: Free tier allows 10 requests per minute
 REQUEST_DELAY = 6  # seconds between requests
 
+# Configuration: Fetch ALL data or limited data
+FETCH_ALL_DATA = True  # Set to True to fetch all teams, players, matches
+
 def make_api_request(endpoint):
     """Make API request with rate limiting and error handling"""
     url = f"{BASE_URL}/{endpoint}"
@@ -79,50 +82,83 @@ def populate_leagues():
     return count
 
 def populate_teams():
-    """Populate teams table"""
+    """Populate teams table from ALL leagues"""
     print("\n⚽ Populating Teams...")
 
-    # Get teams from Premier League (PL)
-    data = make_api_request('competitions/PL/teams')
-
-    if not data or 'teams' not in data:
-        print("  ❌ Failed to fetch teams")
-        return 0
+    # Get teams from all major leagues
+    league_codes = ['PL', 'PD', 'BL1', 'SA', 'FL1', 'CL']
+    league_ids = {
+        'PL': 2021,   # Premier League
+        'PD': 2014,   # La Liga
+        'BL1': 2002,  # Bundesliga
+        'SA': 2019,   # Serie A
+        'FL1': 2015,  # Ligue 1
+        'CL': 2001,   # Champions League
+    }
 
     count = 0
-    for team in data['teams'][:20]:  # Limit to 20 teams
-        try:
-            upsert_team(
-                external_id=team.get('id'),
-                league_external_id=2021,  # Premier League external ID
-                name=team.get('name'),
-                short_name=team.get('shortName', team.get('name')),
-                founded=team.get('founded'),
-                stadium=team.get('venue')
-            )
-            count += 1
-            print(f"  ✅ Added: {team.get('name')}")
-        except Exception as e:
-            print(f"  ❌ Error inserting team: {str(e)}")
+    for code in league_codes:
+        print(f"\n  📊 Fetching teams from {code}...")
+        data = make_api_request(f'competitions/{code}/teams')
 
-    print(f"✅ Teams populated: {count}")
+        if not data or 'teams' not in data:
+            print(f"  ❌ Failed to fetch teams from {code}")
+            continue
+
+        # Limit teams per league if not fetching all
+        teams_to_process = data['teams'] if FETCH_ALL_DATA else data['teams'][:10]
+
+        for team in teams_to_process:
+            try:
+                upsert_team(
+                    external_id=team.get('id'),
+                    league_external_id=league_ids.get(code),
+                    name=team.get('name'),
+                    short_name=team.get('shortName', team.get('name')),
+                    founded=team.get('founded'),
+                    stadium=team.get('venue')
+                )
+                count += 1
+                print(f"  ✅ Added: {team.get('name')} ({code})")
+            except Exception as e:
+                print(f"  ❌ Error inserting team: {str(e)}")
+
+    print(f"\n✅ Teams populated: {count}")
     return count
 
 def populate_players():
-    """Populate players table"""
+    """Populate players table from ALL teams"""
     print("\n👤 Populating Players...")
 
-    # Get a few teams and their players
-    team_ids = [57, 61, 65, 66, 73]  # Arsenal, Chelsea, Man City, Man Utd, Tottenham
+    # Get all teams from database
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT external_id, name FROM teams ORDER BY id")
+    teams = cur.fetchall()
+    conn.close()
+
+    if not teams:
+        print("  ⚠️  No teams found in database. Run populate_teams() first.")
+        return 0
 
     count = 0
-    for team_id in team_ids:
+    total_teams = len(teams)
+
+    for idx, team in enumerate(teams, 1):
+        team_id = team['external_id']
+        team_name = team['name']
+
+        print(f"\n  [{idx}/{total_teams}] Fetching players from {team_name}...")
         data = make_api_request(f'teams/{team_id}')
 
         if not data or 'squad' not in data:
+            print(f"  ⚠️  No squad data for {team_name}")
             continue
 
-        for player in data['squad'][:5]:  # Limit to 5 players per team
+        # Fetch ALL players if FETCH_ALL_DATA is True
+        players_to_process = data['squad'] if FETCH_ALL_DATA else data['squad'][:5]
+
+        for player in players_to_process:
             try:
                 upsert_player(
                     external_id=player.get('id'),
@@ -134,55 +170,74 @@ def populate_players():
                     birthdate=player.get('dateOfBirth')
                 )
                 count += 1
-                print(f"  ✅ Added: {player.get('name')} ({player.get('position')})")
+                print(f"    ✅ {player.get('name')} ({player.get('position', 'N/A')})")
             except Exception as e:
-                print(f"  ❌ Error inserting player: {str(e)}")
+                print(f"    ❌ Error: {str(e)}")
 
-    print(f"✅ Players populated: {count}")
+    print(f"\n✅ Players populated: {count}")
     return count
 
 def populate_matches():
-    """Populate matches table"""
+    """Populate matches table from ALL leagues"""
     print("\n🏆 Populating Matches...")
 
-    # Get recent Premier League matches
-    data = make_api_request('competitions/PL/matches?status=FINISHED')
-
-    if not data or 'matches' not in data:
-        print("  ❌ Failed to fetch matches")
-        return 0
+    # Get matches from all major leagues
+    league_codes = ['PL', 'PD', 'BL1', 'SA', 'FL1', 'CL']
+    league_ids = {
+        'PL': 2021,   # Premier League
+        'PD': 2014,   # La Liga
+        'BL1': 2002,  # Bundesliga
+        'SA': 2019,   # Serie A
+        'FL1': 2015,  # Ligue 1
+        'CL': 2001,   # Champions League
+    }
 
     count = 0
-    for match in data['matches'][:20]:  # Limit to 20 matches
-        try:
-            # Parse date
-            match_date = match.get('utcDate', '')
-            if match_date:
-                match_date = datetime.fromisoformat(match_date.replace('Z', '+00:00')).strftime('%Y-%m-%d %H:%M:%S')
+    for code in league_codes:
+        print(f"\n  📊 Fetching matches from {code}...")
 
-            # Get season info
-            season = match.get('season', {})
-            season_str = f"{season.get('startDate', '')[:4]}/{season.get('endDate', '')[:4]}" if season else "2024/2025"
+        # Fetch finished matches
+        data = make_api_request(f'competitions/{code}/matches?status=FINISHED')
 
-            upsert_match(
-                external_id=match.get('id'),
-                league_external_id=2021,  # Premier League
-                season=season_str,
-                match_date=match_date,
-                home_team_ext_id=match.get('homeTeam', {}).get('id'),
-                away_team_ext_id=match.get('awayTeam', {}).get('id'),
-                home_score=match.get('score', {}).get('fullTime', {}).get('home'),
-                away_score=match.get('score', {}).get('fullTime', {}).get('away')
-            )
-            count += 1
-            home_name = match.get('homeTeam', {}).get('name', 'Unknown')
-            away_name = match.get('awayTeam', {}).get('name', 'Unknown')
-            score = f"{match.get('score', {}).get('fullTime', {}).get('home', 0)}-{match.get('score', {}).get('fullTime', {}).get('away', 0)}"
-            print(f"  ✅ Added: {home_name} vs {away_name} ({score})")
-        except Exception as e:
-            print(f"  ❌ Error inserting match: {str(e)}")
+        if not data or 'matches' not in data:
+            print(f"  ❌ Failed to fetch matches from {code}")
+            continue
 
-    print(f"✅ Matches populated: {count}")
+        # Limit matches per league if not fetching all
+        matches_to_process = data['matches'] if FETCH_ALL_DATA else data['matches'][:20]
+
+        for match in matches_to_process:
+            try:
+                # Parse date
+                match_date = match.get('utcDate', '')
+                if match_date:
+                    match_date = datetime.fromisoformat(match_date.replace('Z', '+00:00')).strftime('%Y-%m-%d %H:%M:%S')
+
+                # Get season info
+                season = match.get('season', {})
+                season_str = f"{season.get('startDate', '')[:4]}/{season.get('endDate', '')[:4]}" if season else "2024/2025"
+
+                upsert_match(
+                    external_id=match.get('id'),
+                    league_external_id=league_ids.get(code),
+                    season=season_str,
+                    match_date=match_date,
+                    home_team_ext_id=match.get('homeTeam', {}).get('id'),
+                    away_team_ext_id=match.get('awayTeam', {}).get('id'),
+                    home_score=match.get('score', {}).get('fullTime', {}).get('home'),
+                    away_score=match.get('score', {}).get('fullTime', {}).get('away')
+                )
+                count += 1
+                home_name = match.get('homeTeam', {}).get('name', 'Unknown')
+                away_name = match.get('awayTeam', {}).get('name', 'Unknown')
+                score = f"{match.get('score', {}).get('fullTime', {}).get('home', 0)}-{match.get('score', {}).get('fullTime', {}).get('away', 0)}"
+                print(f"  ✅ {home_name} vs {away_name} ({score})")
+            except Exception as e:
+                print(f"  ❌ Error: {str(e)}")
+
+        print(f"  → {code}: {len(matches_to_process)} matches processed")
+
+    print(f"\n✅ Matches populated: {count}")
     return count
 
 def create_admin_user():
@@ -216,42 +271,77 @@ def create_admin_user():
 
 def main():
     """Main function to populate all data"""
-    print("=" * 60)
-    print("🚀 POPULATING FOOTBALL DATABASE")
-    print("=" * 60)
+    print("=" * 70)
+    print("🚀 POPULATING FOOTBALL DATABASE - FULL DATA MODE")
+    print("=" * 70)
     print(f"API Key: {API_KEY[:10]}...")
     print(f"Base URL: {BASE_URL}")
-    print("=" * 60)
-    
+    print(f"Fetch All Data: {FETCH_ALL_DATA}")
+    print(f"Rate Limit: {REQUEST_DELAY}s delay between requests")
+    print("=" * 70)
+
+    if FETCH_ALL_DATA:
+        print("\n⚠️  WARNING: Fetching ALL data will take significant time!")
+        print("   - All teams from 6 leagues")
+        print("   - All players from all teams")
+        print("   - All finished matches from all leagues")
+        print("   - Estimated time: 30-60 minutes (due to rate limiting)")
+        print("\n   Press Ctrl+C to cancel, or wait 5 seconds to continue...")
+        try:
+            time.sleep(5)
+        except KeyboardInterrupt:
+            print("\n\n❌ Cancelled by user")
+            return
+
+    start_time = time.time()
+
     # Initialize database
     print("\n🔧 Initializing database...")
     init_db()
-    
+
     # Populate data
+    print("\n" + "=" * 70)
+    print("STARTING DATA POPULATION")
+    print("=" * 70)
+
     total = 0
-    total += populate_leagues()
-    total += populate_teams()
-    total += populate_players()
-    total += populate_matches()
+    leagues_count = populate_leagues()
+    total += leagues_count
+
+    teams_count = populate_teams()
+    total += teams_count
+
+    players_count = populate_players()
+    total += players_count
+
+    matches_count = populate_matches()
+    total += matches_count
+
     create_admin_user()
-    
-    print("\n" + "=" * 60)
+
+    elapsed_time = time.time() - start_time
+
+    print("\n" + "=" * 70)
     print(f"✅ DATABASE POPULATION COMPLETE!")
+    print("=" * 70)
     print(f"📊 Total records inserted: {total}")
-    print("=" * 60)
-    
+    print(f"⏱️  Time elapsed: {elapsed_time:.2f} seconds ({elapsed_time/60:.2f} minutes)")
+    print("=" * 70)
+
     # Verify data
-    print("\n📋 Verifying data...")
+    print("\n📋 FINAL VERIFICATION:")
+    print("-" * 70)
     conn = get_db_connection()
     cur = conn.cursor()
-    
+
     tables = ['leagues', 'teams', 'players', 'matches', 'users']
     for table in tables:
         cur.execute(f'SELECT COUNT(*) FROM {table}')
         count = cur.fetchone()[0]
-        print(f"  {table}: {count} records")
-    
+        print(f"  {table.upper():15} : {count:6} records")
+
     conn.close()
+    print("-" * 70)
     print("\n✅ Done!")
 
 if __name__ == '__main__':
