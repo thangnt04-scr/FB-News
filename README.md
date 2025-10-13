@@ -1,41 +1,60 @@
-# ⚽ Football Information System
+# ⚽ Football Information System - DevSecOps Implementation
 
-Hệ thống thông tin bóng đá toàn diện với chức năng đăng nhập phân quyền, quản lý dữ liệu từ các giải đấu hàng đầu thế giới.
+Hệ thống thông tin bóng đá toàn diện với chức năng đăng nhập phân quyền, quản lý dữ liệu từ các giải đấu hàng đầu thế giới, được triển khai với mô hình DevSecOps hoàn chỉnh.
 
 ## 🔒 DevSecOps Implementation
 
-**Branch:** `cicd-pipeline`
-**Status:** ✅ Production Ready
+**Branch:** `cicd-pipeline`  
+**Status:** ✅ Production Ready  
+**Live Demo:** https://fb-news-rlrs.onrender.com/
 
 ### **Security Features:**
 - ✅ **SAST** - Bandit code scanning
-- ✅ **Dependency Scan** - Safety vulnerability check
+- ✅ **Dependency Scan** - Safety vulnerability check  
 - ✅ **Container Scan** - Trivy image scanning
 - ✅ **CI/CD Pipeline** - Automated security gates
 - ✅ **Docker** - Production-ready with security hardening
 - ✅ **Auto-Deploy** - Render.com integration
 
-### **Quick Start:**
-```bash
-# Run security scans
-.\run-devsecops-scans.ps1
+## 🚀 Quick Start
 
+### **Local Development:**
+```bash
+# 1. Clone repository
+git clone https://github.com/thangnt04-scr/FB-News.git
+cd FB-News
+
+# 2. Setup environment
+python -m venv venv
+venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Linux/Mac
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Create admin user
+python create_admin.py
+
+# 5. Run application
+python app.py
+```
+
+### **Docker Deployment:**
+```bash
 # Build and run with Docker
 docker-compose up -d
 
 # View at http://localhost:5000
 ```
 
-### **Documentation:**
-- 📖 [Quick Start Guide](QUICK-START.md)
-- 📖 [Render Deployment Guide](RENDER-DEPLOYMENT-GUIDE.md)
-- 📖 [Complete DevSecOps Report](DEVSECOPS-COMPLETE-REPORT.md)
-- 📖 [Implementation Summary](IMPLEMENTATION-SUMMARY.md)
+### **DevSecOps Demo:**
+```bash
+# Run complete DevSecOps workflow
+.\demo-all.ps1
 
-### **Links:**
-- 🔗 [GitHub Actions](https://github.com/thangnt04-scr/FB-News/actions)
-- 🔗 [Security Reports](reports/)
-- 🔗 [Live Demo](https://fb-news.onrender.com) (Coming soon)
+# Or run security scans only
+.\run-devsecops-scans.ps1
+```
 
 ## 🎯 Tính năng chính
 
@@ -58,6 +77,13 @@ docker-compose up -d
 - 🚫 Không thể truy cập Dashboard
 - 🚫 Không thể chỉnh sửa dữ liệu
 
+## 🔐 Tài khoản mặc định
+
+| Role | Username | Password | Quyền hạn |
+|------|----------|----------|-----------|
+| 👑 **Admin** | `admin` | `admin123` | Toàn quyền |
+| 👤 **User** | `user` | `user123` | Chỉ xem |
+
 ## 📁 Cấu trúc dự án
 
 ```
@@ -67,144 +93,113 @@ Football/
 ├── 🔐 auth.py                # Authentication module
 ├── 🛡️ decorators.py          # Custom decorators
 ├── 👤 create_admin.py        # Script tạo admin
-├── 🔄 sync_all.py           # Sync dữ liệu từ API
+├── 📊 populate_db.py         # Populate database data
+├── 🔍 verify_data.py         # Database verification
 ├── 📋 requirements.txt       # Dependencies
-├── 📖 README.md             # Hướng dẫn này
-├── 📁 services/
-│   └── 🌐 football_api.py   # API service
-├── 📁 templates/
-│   ├── 🏠 base.html         # Template chung
-│   ├── 🏠 index.html        # Trang chủ
-│   ├── 📊 dashboard.html    # Dashboard admin
-│   ├── 🏆 league.html       # Trang giải đấu
-│   ├── ⚽ team.html         # Trang đội bóng
-│   ├── 👤 player.html       # Trang cầu thủ
-│   └── 📁 auth/
-│       ├── 🔑 login.html    # Đăng nhập
-│       ├── 📝 register.html # Đăng ký
-│       └── 👤 profile.html  # Profile
-└── 📁 static/
-    ├── 🎨 css/main.css      # CSS chính
-    └── ⚡ js/main.js        # JavaScript chính
+├── 🐳 Dockerfile             # Production Docker image
+├── 🐳 docker-compose.yml     # Docker Compose config
+├── ☁️  render.yaml           # Render configuration
+├── 🔧 build.sh               # Render build script
+├── 🔒 run-devsecops-scans.ps1 # Security scan script
+├── 🎬 demo-all.ps1           # Complete demo script
+├── 📁 .github/workflows/
+│   └── devsecops.yml         # CI/CD pipeline
+├── 📁 reports/               # Security scan reports
+├── 📁 templates/             # HTML templates
+└── 📁 static/                # CSS/JS assets
 ```
 
-## 🚀 Hướng dẫn cài đặt và chạy
+## 🛡️ DevSecOps Implementation
 
-### Bước 1: Chuẩn bị môi trường
+### **I. Chuẩn bị môi trường**
+- ✅ Python 3.11+ với virtual environment
+- ✅ Docker & Docker Compose
+- ✅ Security tools: Bandit, Safety, Trivy
+- ✅ Git & GitHub Actions
 
-```bash
-# Tạo virtual environment (khuyến nghị)
-python -m venv venv
+### **II. Docker hóa ứng dụng**
+- ✅ Multi-stage Dockerfile với security hardening
+- ✅ Non-root user (appuser:1000)
+- ✅ Resource limits và capability dropping
+- ✅ Health checks và monitoring
 
-# Kích hoạt virtual environment
-# Trên Windows:
-venv\Scripts\activate
-# Trên macOS/Linux:
-source venv/bin/activate
+### **III. Quét bảo mật thủ công**
+- ✅ **Bandit (SAST):** Static code analysis
+- ✅ **Safety:** Dependency vulnerability scan
+- ✅ **Trivy:** Container security scan
+- ✅ Automated reporting và artifact storage
+
+### **IV. Tích hợp tự động (CI/CD)**
+- ✅ GitHub Actions workflow
+- ✅ Automated security gates
+- ✅ Multi-job pipeline với parallel execution
+- ✅ Artifact management và reporting
+
+### **V. Triển khai lên Cloud**
+- ✅ Render.com configuration
+- ✅ Auto-deployment từ GitHub
+- ✅ Environment variables management
+- ✅ Health monitoring và logging
+
+### **VI. Báo cáo và minh chứng**
+- ✅ Comprehensive security reports
+- ✅ CI/CD pipeline documentation
+- ✅ Deployment verification
+- ✅ Performance monitoring
+
+## 🔧 API Endpoints
+
+### 🌐 Public Endpoints
+```
+GET  /                    # Trang chủ
+GET  /login              # Form đăng nhập
+POST /login              # Xử lý đăng nhập
+GET  /register           # Form đăng ký
+POST /register           # Xử lý đăng ký
+GET  /api/leagues        # Danh sách giải đấu
+GET  /api/leagues/{id}/teams  # Đội bóng trong giải
+GET  /api/teams/{id}     # Chi tiết đội bóng
+GET  /api/teams/{id}/players  # Cầu thủ của đội
+GET  /api/players/{id}   # Chi tiết cầu thủ
+GET  /health             # Health check
 ```
 
-### Bước 2: Cài đặt dependencies
-
-```bash
-pip install -r requirements.txt
+### 🔐 Protected Endpoints
+```
+GET  /profile            # Profile cá nhân
+GET  /logout             # Đăng xuất
 ```
 
-### Bước 3: Tạo tài khoản admin
-
-```bash
-python create_admin.py
+### 👑 Admin Only Endpoints
+```
+GET  /dashboard          # Dashboard admin
+GET  /api/admin/users    # Danh sách users
+PUT  /api/admin/users/{id}/role  # Cập nhật role
+DELETE /api/admin/users/{id}     # Xóa user
 ```
 
-**Output mong đợi:**
-```
-🚀 Tạo users mặc định...
-==================================================
-✅ Tạo admin user thành công!
-   Username: admin
-   Email: admin@football.com
-   Password: admin123
-   Role: admin
+## 🛡️ Security Features
 
-✅ Tạo test user thành công!
-   Username: user
-   Email: user@football.com
-   Password: user123
-   Role: user
+- ✅ **Password Hashing:** Werkzeug secure hashing
+- ✅ **Session Management:** Flask-Login với secure sessions
+- ✅ **Role-based Access:** Phân quyền Admin/User rõ ràng
+- ✅ **CSRF Protection:** Flask tự động bảo vệ
+- ✅ **Input Validation:** Kiểm tra dữ liệu đầu vào
+- ✅ **Container Security:** Non-root user, capability dropping
+- ✅ **Dependency Security:** Regular vulnerability scanning
+- ✅ **Code Security:** SAST scanning với Bandit
 
-==================================================
-✅ Hoàn thành! Bạn có thể đăng nhập với:
-   Admin: admin / admin123
-   User:  user / user123
-```
+## 🎨 Technology Stack
 
-### Bước 4: Chạy ứng dụng
-
-```bash
-python app.py
-```
-
-**Output mong đợi:**
-```
- * Serving Flask app 'app'
- * Debug mode: on
-WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
- * Running on http://127.0.0.1:5000
-Press CTRL+C to quit
- * Debugger is active!
- * Debugger PIN: xxx-xxx-xxx
-```
-
-### Bước 5: Truy cập ứng dụng
-
-🌐 **Mở trình duyệt và truy cập:** http://localhost:5000
-
-## 🔐 Tài khoản mặc định
-
-| Role | Username | Password | Quyền hạn |
-|------|----------|----------|-----------|
-| 👑 **Admin** | `admin` | `admin123` | Toàn quyền |
-| 👤 **User** | `user` | `user123` | Chỉ xem |
-
-## 🎮 Hướng dẫn sử dụng
-
-### 🔑 Đăng nhập
-
-1. Truy cập http://localhost:5000
-2. Click **"Đăng nhập"** ở góc phải
-3. Nhập username và password
-4. Click **"Đăng nhập"**
-
-### 👑 Sử dụng với tài khoản Admin
-
-1. **Đăng nhập** với `admin` / `admin123`
-2. **Dashboard:** Click "Dashboard" để quản lý users
-3. **Quản lý Users:**
-   - Xem danh sách tất cả users
-   - Thay đổi role (Admin ↔ User)
-   - Xóa users (trừ chính mình)
-4. **Quản lý dữ liệu:** Có thể thêm/sửa/xóa dữ liệu bóng đá
-
-### 👤 Sử dụng với tài khoản User
-
-1. **Đăng nhập** với `user` / `user123`
-2. **Xem dữ liệu:** Chỉ có thể xem thông tin
-3. **Profile:** Click tên user để xem profile
-4. **Giới hạn:** Không thể truy cập Dashboard
-
-### 📝 Đăng ký tài khoản mới
-
-1. Click **"Đăng ký"** ở góc phải
-2. Điền thông tin:
-   - Tên đăng nhập
-   - Email
-   - Mật khẩu
-   - Xác nhận mật khẩu
-3. Click **"Đăng ký"**
-4. Đăng nhập với tài khoản mới
+- **Backend:** Python 3.11, Flask 3.0, SQLite
+- **Frontend:** Bootstrap 5, Font Awesome, JavaScript
+- **Security:** Bandit, Safety, Trivy, Werkzeug
+- **Containerization:** Docker, Docker Compose
+- **CI/CD:** GitHub Actions
+- **Cloud:** Render.com
+- **API:** football-data.org
 
 ## 📊 Database Schema
-
-Hệ thống sử dụng **SQLite** với các bảng:
 
 ```sql
 -- Bảng người dùng
@@ -223,76 +218,32 @@ players (id, team_id, name, nationality, position, shirt_number, birthdate, heig
 matches (id, league_id, season, match_date, home_team_id, away_team_id, home_score, away_score, external_id)
 ```
 
-## 🔧 API Endpoints
+## 🔄 CI/CD Pipeline
 
-### 🌐 Public Endpoints (Không cần đăng nhập)
-```
-GET  /                    # Trang chủ
-GET  /login              # Form đăng nhập
-POST /login              # Xử lý đăng nhập
-GET  /register           # Form đăng ký
-POST /register           # Xử lý đăng ký
-GET  /api/leagues        # Danh sách giải đấu
-GET  /api/leagues/{id}/teams  # Đội bóng trong giải
-GET  /api/teams/{id}     # Chi tiết đội bóng
-GET  /api/teams/{id}/players  # Cầu thủ của đội
-GET  /api/players/{id}   # Chi tiết cầu thủ
-```
-
-### 🔐 Protected Endpoints (Cần đăng nhập)
-```
-GET  /profile            # Profile cá nhân
-GET  /logout             # Đăng xuất
+```mermaid
+graph LR
+    A[Code Push] --> B[GitHub Actions]
+    B --> C[Code Quality]
+    B --> D[Dependency Scan]
+    B --> E[Docker Build]
+    C --> F[Security Summary]
+    D --> F
+    E --> G[Container Scan]
+    G --> F
+    F --> H[Deploy to Render]
 ```
 
-### 👑 Admin Only Endpoints
-```
-GET  /dashboard          # Dashboard admin
-GET  /api/admin/users    # Danh sách users
-PUT  /api/admin/users/{id}/role  # Cập nhật role
-DELETE /api/admin/users/{id}     # Xóa user
-```
+## 📈 Monitoring & Health Checks
 
-## 🛡️ Bảo mật
-
-- ✅ **Password Hashing:** Sử dụng Werkzeug để hash password
-- ✅ **Session Management:** Flask-Login quản lý session
-- ✅ **Role-based Access:** Phân quyền rõ ràng Admin/User
-- ✅ **CSRF Protection:** Flask tự động bảo vệ
-- ✅ **Input Validation:** Kiểm tra dữ liệu đầu vào
-
-## 🎨 Giao diện
-
-- 🎨 **Bootstrap 5:** Giao diện hiện đại, responsive
-- 📱 **Mobile-friendly:** Tối ưu cho mọi thiết bị
-- 🎯 **User Experience:** Dễ sử dụng, trực quan
-- 🌈 **Icons:** Font Awesome icons
-- ⚡ **Fast Loading:** Tối ưu hiệu suất
-
-## 🔄 Sync dữ liệu từ API
-
-Để đồng bộ dữ liệu từ football-data.org:
-
-1) Cấu hình API key (không hard-code trong mã nguồn nữa):
-
-```bash
-# Tạo file .env (cùng thư mục với dự án)
-echo "FOOTBALL_DATA_API_KEY=your_api_key_here" > .env
-```
-
-2) Chạy sync:
-
-```bash
-python sync_all.py
-# Tuỳ chọn: chỉ sync cầu thủ cho các đội đã có external_id
-python sync_players.py
-```
-
-Gợi ý: Nếu lệnh `python` không tồn tại trên Linux/macOS, hãy dùng `python3`.
+- **Application Health:** `/health` endpoint
+- **Container Health:** Docker health checks
+- **Security Monitoring:** Automated scans
+- **Performance:** Resource monitoring
+- **Logs:** Centralized logging
 
 ## 🐛 Troubleshooting
 
-### Lỗi thường gặp:
+### Common Issues:
 
 1. **"Module not found"**
    ```bash
@@ -300,52 +251,50 @@ Gợi ý: Nếu lệnh `python` không tồn tại trên Linux/macOS, hãy dùng
    ```
 
 2. **"Database locked"**
-   - Đảm bảo không có process nào đang sử dụng database
-   - Restart ứng dụng
+   - Restart application
+   - Check for running processes
 
 3. **"Port 5000 already in use"**
    ```bash
-   # Thay đổi port trong app.py
+   # Change port in app.py
    app.run(debug=True, port=5001)
    ```
 
-4. **"Admin user already exists"**
-   - Chạy lại `python create_admin.py` sẽ bỏ qua user đã tồn tại
+4. **Docker build fails**
+   ```bash
+   docker system prune -a
+   docker-compose build --no-cache
+   ```
 
-5. **Thiếu dữ liệu/thiếu đội/cầu thủ**
-   - Dùng các script dữ liệu sau (tuỳ tình huống):
-     - `add_sample_data.py`: thêm bộ dữ liệu mẫu tối thiểu (leagues/teams/players/matches)
-     - `add_important_teams.py`: bổ sung nhanh các đội lớn (La Liga, Bundesliga, Serie A)
-     - `add_missing_teams.py`: thêm đầy đủ các đội còn thiếu cho La Liga/Bundesliga/Serie A
-     - `add_star_players.py`: thêm cầu thủ sao cho Real/Barca/Atletico
-     - `add_more_star_players.py`: thêm sao cho Bayern, AC Milan, Inter
-     - `add_missing_players.py`: tự động tạo cầu thủ mẫu cho những đội chưa có cầu thủ
+5. **Security scan errors**
+   ```bash
+   # Check tool installation
+   bandit --version
+   safety --version
+   trivy --version
+   ```
 
-6. **Lỗi API key khi sync**
-   - Đảm bảo đã đặt biến môi trường `FOOTBALL_DATA_API_KEY` (qua file `.env` như hướng dẫn ở trên)
-   - Kiểm tra mạng và quota API; có thể cần tăng `API_DELAY` trong `services/football_api.py`
+## 📚 Documentation
 
-## ⚙️ Biến môi trường
+- 📖 [Complete DevSecOps Report](DEVSECOPS-COMPLETE-REPORT.md)
+- 📖 [Project Description](PROJECT-DESCRIPTION.md)
+- 📖 [Demo Report Guide](DEMO-REPORT-GUIDE.md)
+- 📖 [Output Evidence](OUTPUT-EVIDENCE.md)
 
-- `FOOTBALL_DATA_API_KEY`: API key của football-data.org (yêu cầu cho sync)
-- `FOOTBALL_DB` (tuỳ chọn): đường dẫn file SQLite DB. Mặc định là `footballinfor.db` cạnh `db.py`.
+## 🔗 Links
 
-## 📝 Ghi chú phát triển
+- 🔗 [GitHub Repository](https://github.com/thangnt04-scr/FB-News)
+- 🔗 [GitHub Actions](https://github.com/thangnt04-scr/FB-News/actions)
+- 🔗 [Live Demo](https://fb-news-rlrs.onrender.com/)
+- 🔗 [Security Reports](reports/)
 
-- **Framework:** Flask + Flask-Login
-- **Database:** SQLite
-- **Frontend:** Bootstrap 5 + Font Awesome
-- **API:** football-data.org
-- **Security:** Werkzeug password hashing
-- **Development:** Debug mode enabled
-
-## 🤝 Đóng góp
+## 🤝 Contributing
 
 1. Fork repository
-2. Tạo feature branch
+2. Create feature branch
 3. Commit changes
 4. Push to branch
-5. Tạo Pull Request
+5. Create Pull Request
 
 ## 📄 License
 
