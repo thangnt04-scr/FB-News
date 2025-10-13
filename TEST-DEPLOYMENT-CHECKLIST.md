@@ -1,6 +1,6 @@
 # ✅ TEST DEPLOYMENT CHECKLIST
 
-**Service:** https://fb-news-k8za.onrender.com  
+**Service:** https://fb-news-rlrs.onrender.com  
 **Date:** 2025-10-13  
 **Status:** 🔄 Redeploying with fix
 
@@ -68,14 +68,14 @@ Click **"Logs"** tab and watch for:
 
 ```powershell
 # Test with curl
-curl https://fb-news-k8za.onrender.com
+curl https://fb-news-rlrs.onrender.com
 
 # Expected: HTML response (status 200)
 ```
 
 **Or open in browser:**
 ```
-https://fb-news-k8za.onrender.com
+https://fb-news-rlrs.onrender.com
 ```
 
 **Expected Result:**
@@ -96,23 +96,23 @@ https://fb-news-k8za.onrender.com
 
 ```powershell
 # 1. Test leagues API
-curl https://fb-news-k8za.onrender.com/api/leagues
+curl https://fb-news-rlrs.onrender.com/api/leagues
 
 # Expected: [] (empty array) or JSON array of leagues
 # NOT: Error 500 or "no such table"
 
 # 2. Test teams API
-curl https://fb-news-k8za.onrender.com/api/teams
+curl https://fb-news-rlrs.onrender.com/api/teams
 
 # Expected: [] (empty array) or JSON array of teams
 
 # 3. Test players API
-curl https://fb-news-k8za.onrender.com/api/players
+curl https://fb-news-rlrs.onrender.com/api/players
 
 # Expected: [] (empty array) or JSON array of players
 
 # 4. Test matches API
-curl https://fb-news-k8za.onrender.com/api/matches
+curl https://fb-news-rlrs.onrender.com/api/matches
 
 # Expected: [] (empty array) or JSON array of matches
 ```
@@ -129,7 +129,7 @@ curl https://fb-news-k8za.onrender.com/api/matches
 
 **1. Test Register Page:**
 ```
-URL: https://fb-news-k8za.onrender.com/register
+URL: https://fb-news-rlrs.onrender.com/register
 ```
 - [ ] ✅ Register form displays
 - [ ] ✅ Can fill in username, email, password
@@ -137,7 +137,7 @@ URL: https://fb-news-k8za.onrender.com/register
 
 **2. Test Login Page:**
 ```
-URL: https://fb-news-k8za.onrender.com/login
+URL: https://fb-news-rlrs.onrender.com/login
 ```
 - [ ] ✅ Login form displays
 - [ ] ✅ Can enter credentials
@@ -155,7 +155,7 @@ Password: Test123!
 
 **4. Test Profile:**
 ```
-URL: https://fb-news-k8za.onrender.com/profile
+URL: https://fb-news-rlrs.onrender.com/profile
 ```
 - [ ] ✅ Profile page displays
 - [ ] ✅ Shows user information
@@ -169,7 +169,7 @@ URL: https://fb-news-k8za.onrender.com/profile
 
 **1. Homepage:**
 ```
-URL: https://fb-news-k8za.onrender.com/
+URL: https://fb-news-rlrs.onrender.com/
 ```
 - [ ] ✅ Loads successfully
 - [ ] ✅ Statistics display
@@ -177,21 +177,21 @@ URL: https://fb-news-k8za.onrender.com/
 
 **2. Leagues Page:**
 ```
-URL: https://fb-news-k8za.onrender.com/leagues
+URL: https://fb-news-rlrs.onrender.com/leagues
 ```
 - [ ] ✅ Page loads
 - [ ] ✅ Shows leagues list (or empty state)
 
 **3. Teams Page:**
 ```
-URL: https://fb-news-k8za.onrender.com/teams
+URL: https://fb-news-rlrs.onrender.com/teams
 ```
 - [ ] ✅ Page loads
 - [ ] ✅ Shows teams list (or empty state)
 
 **4. Players Page:**
 ```
-URL: https://fb-news-k8za.onrender.com/players
+URL: https://fb-news-rlrs.onrender.com/players
 ```
 - [ ] ✅ Page loads
 - [ ] ✅ Shows players list (or empty state)
@@ -225,7 +225,7 @@ URL: https://fb-news-k8za.onrender.com/players
 
 ```powershell
 # Test response time
-Measure-Command { curl https://fb-news-k8za.onrender.com }
+Measure-Command { curl https://fb-news-rlrs.onrender.com }
 
 # Expected: < 5 seconds (first request after sleep)
 # Expected: < 1 second (subsequent requests)
@@ -287,7 +287,7 @@ URL: https://github.com/thangnt04-scr/FB-News/actions
 ```
 🎉 DEPLOYMENT SUCCESSFUL!
 
-Service URL: https://fb-news-k8za.onrender.com
+Service URL: https://fb-news-rlrs.onrender.com
 Status: ✅ Live and working
 Database: ✅ Initialized
 API: ✅ Functional

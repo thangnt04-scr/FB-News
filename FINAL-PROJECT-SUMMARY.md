@@ -173,7 +173,7 @@ Triển khai đầy đủ quy trình DevSecOps cho ứng dụng Football Informa
 - **Actions:** https://github.com/thangnt04-scr/FB-News/actions
 
 ### **Render:**
-- **Service URL:** https://fb-news-k8za.onrender.com
+- **Service URL:** https://fb-news-rlrs.onrender.com
 - **Dashboard:** https://dashboard.render.com/
 
 ---
@@ -267,7 +267,7 @@ Triển khai đầy đủ quy trình DevSecOps cho ứng dụng Football Informa
 ```
 1. Monitor: https://dashboard.render.com/
 2. Check logs for successful startup
-3. Test: https://fb-news-k8za.onrender.com
+3. Test: https://fb-news-rlrs.onrender.com
 4. Verify: No errors
 ```
 
@@ -311,7 +311,7 @@ For production with persistent data:
 - **Platform:** Render.com
 - **Region:** Singapore
 - **Status:** Live
-- **URL:** https://fb-news-k8za.onrender.com
+- **URL:** https://fb-news-rlrs.onrender.com
 
 ---
 

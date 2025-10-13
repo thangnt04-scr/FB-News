@@ -1,7 +1,7 @@
 # 🔧 RENDER DEPLOYMENT FIXES - COMPLETE SUMMARY
 
 **Date:** 2025-10-13  
-**Service:** https://fb-news-k8za.onrender.com  
+**Service:** https://fb-news-rlrs.onrender.com  
 **Status:** ✅ ALL FIXES APPLIED
 
 ---
@@ -206,19 +206,19 @@ Tables created: leagues, teams, players, matches, users
 
 ### **2. Test Homepage:**
 ```powershell
-curl https://fb-news-k8za.onrender.com
+curl https://fb-news-rlrs.onrender.com
 # Expected: HTML response (status 200)
 ```
 
 ### **3. Test API:**
 ```powershell
-curl https://fb-news-k8za.onrender.com/api/leagues
+curl https://fb-news-rlrs.onrender.com/api/leagues
 # Expected: [] (empty array, not error)
 ```
 
 ### **4. Test in Browser:**
 ```
-https://fb-news-k8za.onrender.com
+https://fb-news-rlrs.onrender.com
 # Expected: Homepage displays with statistics
 ```
 

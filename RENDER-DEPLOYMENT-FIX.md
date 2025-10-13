@@ -1,7 +1,7 @@
 # 🔧 RENDER DEPLOYMENT FIX - DATABASE INITIALIZATION
 
 **Date:** 2025-10-13  
-**Service:** https://fb-news-k8za.onrender.com  
+**Service:** https://fb-news-rlrs.onrender.com  
 **Status:** ✅ FIXED
 
 ---
@@ -130,14 +130,14 @@ git push origin cicd-pipeline
 
 ```powershell
 # Test homepage
-curl https://fb-news-k8za.onrender.com
+curl https://fb-news-rlrs.onrender.com
 
 # Expected: HTML response (not error)
 ```
 
 **In browser:**
 ```
-https://fb-news-k8za.onrender.com
+https://fb-news-rlrs.onrender.com
 ```
 
 **Expected:**
@@ -151,12 +151,12 @@ https://fb-news-k8za.onrender.com
 
 ```powershell
 # Test leagues
-curl https://fb-news-k8za.onrender.com/api/leagues
+curl https://fb-news-rlrs.onrender.com/api/leagues
 
 # Expected: [] (empty array if no data, but no error)
 
 # Test teams
-curl https://fb-news-k8za.onrender.com/api/teams
+curl https://fb-news-rlrs.onrender.com/api/teams
 
 # Expected: [] (empty array)
 ```
@@ -220,7 +220,7 @@ FOOTBALL_DATA_API_KEY=your_api_key
 **Health Check:**
 ```powershell
 # Periodic check
-curl https://fb-news-k8za.onrender.com/
+curl https://fb-news-rlrs.onrender.com/
 
 # Should return 200 OK
 ```
@@ -309,7 +309,7 @@ Render Dashboard → Environment → PORT=10000
 
 **Fix Applied:** ✅ YES  
 **Deployed:** ✅ PENDING (need to redeploy)  
-**Service URL:** https://fb-news-k8za.onrender.com
+**Service URL:** https://fb-news-rlrs.onrender.com
 
 **Action Required:**
 1. Push updated render.yaml to GitHub

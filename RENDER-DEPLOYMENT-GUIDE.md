@@ -145,12 +145,12 @@ Chỉ cần:
 # URL có dạng: https://fb-news-XXXX.onrender.com
 
 # 2. Test homepage
-curl https://fb-news-k8za.onrender.com
+curl https://fb-news-rlrs.onrender.com
 
 # Expected: HTML response với status 200
 
 # 3. Test trong browser
-start https://fb-news-k8za.onrender.com
+start https://fb-news-rlrs.onrender.com
 ```
 
 **Expected Result:**
@@ -164,18 +164,18 @@ start https://fb-news-k8za.onrender.com
 
 ```powershell
 # Test leagues API
-curl https://fb-news-k8za.onrender.com/api/leagues
+curl https://fb-news-rlrs.onrender.com/api/leagues
 
 # Expected: JSON array of leagues
 # [{"id": 1, "name": "Premier League", ...}, ...]
 
 # Test teams API
-curl https://fb-news-k8za.onrender.com/api/teams
+curl https://fb-news-rlrs.onrender.com/api/teams
 
 # Expected: JSON array of teams
 
 # Test players API
-curl https://fb-news-k8za.onrender.com/api/players
+curl https://fb-news-rlrs.onrender.com/api/players
 
 # Expected: JSON array of players
 ```
@@ -186,7 +186,7 @@ curl https://fb-news-k8za.onrender.com/api/players
 
 ```powershell
 # 1. Mở trang login
-start https://fb-news-k8za.onrender.com/login
+start https://fb-news-rlrs.onrender.com/login
 
 # 2. Thử đăng ký user mới
 # Click "Register" → Điền form → Submit
@@ -266,7 +266,7 @@ curl http://localhost:5000
 **Nếu tất cả ✅:**
 ```
 🎉 DEPLOYMENT SUCCESSFUL!
-Service URL: https://fb-news-k8za.onrender.com
+Service URL: https://fb-news-rlrs.onrender.com
 ```
 
 ---
@@ -316,7 +316,7 @@ git push origin cicd-pipeline
 # 5. Wait for deployment to complete
 
 # 6. Test URL again
-curl https://fb-news-k8za.onrender.com
+curl https://fb-news-rlrs.onrender.com
 ```
 
 **Expected:**
