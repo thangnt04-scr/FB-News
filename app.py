@@ -4,9 +4,13 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 import db, sqlite3
 import auth
 from decorators import admin_required, login_required_custom, user_or_admin_required
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-change-this-in-production'
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'your-secret-key-change-this-in-production')
 
 # Flask-Login setup
 login_manager = LoginManager()
@@ -311,4 +315,7 @@ def api_delete_user(user_id):
 
 if __name__ == "__main__":
     db.init_db()
-    app.run(debug=True, port=5000)
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", "5000"))
+    debug = os.getenv("FLASK_DEBUG", "true").lower() == "true"
+    app.run(debug=debug, host=host, port=port)
