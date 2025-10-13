@@ -1,0 +1,300 @@
+name: DevSecOps CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run security scans weekly
+    - cron: '0 0 * * 0'
+
+env:
+  DOCKER_IMAGE: football-app
+  REGISTRY: docker.io
+
+jobs:
+  # Job 1: Code Quality & SAST
+  code-quality:
+    name: Code Quality & SAST
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install bandit pylint flake8
+    
+    - name: Run Bandit (SAST)
+      run: |
+        bandit -r . -f json -o bandit-report.json || true
+        bandit -r . -ll
+      continue-on-error: true
+    
+    - name: Run Pylint
+      run: |
+        pylint **/*.py --exit-zero --output-format=json > pylint-report.json || true
+      continue-on-error: true
+    
+    - name: Run Flake8
+      run: |
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      continue-on-error: true
+    
+    - name: Upload SAST Reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: sast-reports
+        path: |
+          bandit-report.json
+          pylint-report.json
+
+  # Job 2: Dependency Scanning
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install Safety
+      run: pip install safety
+    
+    - name: Run Safety Check
+      run: |
+        safety check --json --output safety-report.json || true
+        safety check || true
+      continue-on-error: true
+    
+    - name: Upload Safety Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: dependency-reports
+        path: safety-report.json
+    
+    - name: Run Snyk Security Scan
+      uses: snyk/actions/python-3.10@master
+      continue-on-error: true
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=high --json-file-output=snyk-report.json
+    
+    - name: Upload Snyk Report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: snyk-report
+        path: snyk-report.json
+
+  # Job 3: Build Docker Image
+  docker-build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: [code-quality, dependency-scan]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Build Docker image
+      run: |
+        docker build -t ${{ env.DOCKER_IMAGE }}:${{ github.sha }} .
+        docker tag ${{ env.DOCKER_IMAGE }}:${{ github.sha }} ${{ env.DOCKER_IMAGE }}:latest
+    
+    - name: Save Docker image
+      run: docker save ${{ env.DOCKER_IMAGE }}:${{ github.sha }} -o football-app.tar
+    
+    - name: Upload Docker image artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: docker-image
+        path: football-app.tar
+        retention-days: 1
+
+  # Job 4: Container Security Scan
+  container-scan:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    needs: docker-build
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Download Docker image
+      uses: actions/download-artifact@v3
+      with:
+        name: docker-image
+    
+    - name: Load Docker image
+      run: docker load -i football-app.tar
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: '${{ env.DOCKER_IMAGE }}:${{ github.sha }}'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        severity: 'CRITICAL,HIGH'
+    
+    - name: Upload Trivy results to GitHub Security
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+    
+    - name: Run Trivy with JSON output
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: '${{ env.DOCKER_IMAGE }}:${{ github.sha }}'
+        format: 'json'
+        output: 'trivy-report.json'
+    
+    - name: Upload Trivy JSON Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: trivy-report
+        path: trivy-report.json
+
+  # Job 5: Security Summary
+  security-summary:
+    name: Generate Security Summary
+    runs-on: ubuntu-latest
+    needs: [code-quality, dependency-scan, container-scan]
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Download all reports
+      uses: actions/download-artifact@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Generate Summary
+      run: |
+        python -c "
+        import json
+        import os
+        from datetime import datetime
+        
+        summary = {
+            'timestamp': datetime.now().isoformat(),
+            'commit': '${{ github.sha }}',
+            'branch': '${{ github.ref_name }}',
+            'scans': {}
+        }
+        
+        # Parse Bandit
+        if os.path.exists('sast-reports/bandit-report.json'):
+            with open('sast-reports/bandit-report.json') as f:
+                bandit = json.load(f)
+                summary['scans']['bandit'] = {
+                    'total': len(bandit.get('results', [])),
+                    'high': sum(1 for r in bandit.get('results', []) if r.get('issue_severity') == 'HIGH')
+                }
+        
+        # Parse Safety
+        if os.path.exists('dependency-reports/safety-report.json'):
+            with open('dependency-reports/safety-report.json') as f:
+                safety = json.load(f)
+                summary['scans']['safety'] = {'vulnerabilities': len(safety)}
+        
+        # Parse Trivy
+        if os.path.exists('trivy-report/trivy-report.json'):
+            with open('trivy-report/trivy-report.json') as f:
+                trivy = json.load(f)
+                results = trivy.get('Results', [])
+                vulns = results[0].get('Vulnerabilities', []) if results else []
+                summary['scans']['trivy'] = {
+                    'total': len(vulns),
+                    'critical': sum(1 for v in vulns if v.get('Severity') == 'CRITICAL'),
+                    'high': sum(1 for v in vulns if v.get('Severity') == 'HIGH')
+                }
+        
+        with open('security-summary.json', 'w') as f:
+            json.dump(summary, f, indent=2)
+        
+        print('## Security Scan Summary')
+        print(f\"**Commit:** {summary['commit'][:7]}\")
+        print(f\"**Branch:** {summary['branch']}\")
+        print(f\"**Timestamp:** {summary['timestamp']}\")
+        print()
+        for tool, results in summary['scans'].items():
+            print(f\"### {tool.upper()}\")
+            for key, value in results.items():
+                print(f\"- {key}: {value}\")
+            print()
+        "
+    
+    - name: Upload Security Summary
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-summary
+        path: security-summary.json
+
+  # Job 6: Deploy (only on main branch)
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [security-summary]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      url: https://your-app-url.com
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Download Docker image
+      uses: actions/download-artifact@v3
+      with:
+        name: docker-image
+    
+    - name: Load Docker image
+      run: docker load -i football-app.tar
+    
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: Push to Docker Hub
+      run: |
+        docker tag ${{ env.DOCKER_IMAGE }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:latest
+        docker tag ${{ env.DOCKER_IMAGE }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+        docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+    
+    - name: Deploy to Cloud
+      run: |
+        echo "Deploying to production..."
+        # Add your deployment commands here
+        # Example: kubectl set image deployment/football-app football-app=${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+

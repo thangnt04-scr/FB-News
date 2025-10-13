@@ -1,0 +1,40 @@
+# Snyk (https://snyk.io) policy file
+
+version: v1.22.0
+
+# Language settings
+language-settings:
+  python: '3.11'
+
+# Ignore specific vulnerabilities (use with caution)
+ignore:
+  # Example: Ignore a specific vulnerability
+  # 'SNYK-PYTHON-FLASK-12345':
+  #   - '*':
+  #       reason: 'Not applicable to our use case'
+  #       expires: '2024-12-31T00:00:00.000Z'
+
+# Exclude paths from scanning
+exclude:
+  global:
+    - venv/**
+    - __pycache__/**
+    - '*.pyc'
+    - '*.pyo'
+    - '*.pyd'
+    - .git/**
+    - .vscode/**
+    - .idea/**
+    - node_modules/**
+    - dist/**
+    - build/**
+    - '*.egg-info/**'
+    - tests/**
+    - docs/**
+
+# Patch settings
+patch: {}
+
+# Organization settings (optional)
+# org: your-org-name
+
