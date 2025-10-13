@@ -13,6 +13,9 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', '4298703a446bbf0d3c91a79c8ed938731557f31c201578a970cdf0367d1b27dc')
 
+# Initialize database on app startup
+db.init_db()
+
 # Flask-Login setup
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -328,7 +331,6 @@ def api_delete_user(user_id):
     return jsonify({'success': True})
 
 if __name__ == "__main__":
-    db.init_db()
     # Get port from environment variable or default to 5000
     port = int(os.getenv('PORT', 5000))
     # Get debug mode from environment
