@@ -21,18 +21,20 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-    
+      uses: actions/checkout@v4
+
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-    
+        cache: 'pip'
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install bandit pylint flake8
+      continue-on-error: false
     
     - name: Run Bandit (SAST)
       run: |
@@ -52,7 +54,8 @@ jobs:
       continue-on-error: true
     
     - name: Upload SAST Reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
+      if: always()
       with:
         name: sast-reports
         path: |
@@ -83,25 +86,27 @@ jobs:
       continue-on-error: true
     
     - name: Upload Safety Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
+      if: always()
       with:
         name: dependency-reports
         path: safety-report.json
     
-    - name: Run Snyk Security Scan
-      uses: snyk/actions/python-3.10@master
-      continue-on-error: true
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-        args: --severity-threshold=high --json-file-output=snyk-report.json
+    # Snyk scan - optional, only if SNYK_TOKEN is configured
+    # - name: Run Snyk Security Scan
+    #   uses: snyk/actions/python-3.10@master
+    #   continue-on-error: true
+    #   env:
+    #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    #   with:
+    #     args: --severity-threshold=high --json-file-output=snyk-report.json
     
-    - name: Upload Snyk Report
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: snyk-report
-        path: snyk-report.json
+    # - name: Upload Snyk Report
+    #   uses: actions/upload-artifact@v4
+    #   if: always()
+    #   with:
+    #     name: snyk-report
+    #     path: snyk-report.json
 
   # Job 3: Build Docker Image
   docker-build:
@@ -111,10 +116,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-    
+      uses: actions/checkout@v4
+
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      uses: docker/setup-buildx-action@v3
     
     - name: Build Docker image
       run: |
@@ -125,7 +130,7 @@ jobs:
       run: docker save ${{ env.DOCKER_IMAGE }}:${{ github.sha }} -o football-app.tar
     
     - name: Upload Docker image artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: docker-image
         path: football-app.tar
@@ -139,10 +144,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-    
+      uses: actions/checkout@v4
+
     - name: Download Docker image
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: docker-image
     
@@ -171,7 +176,8 @@ jobs:
         output: 'trivy-report.json'
     
     - name: Upload Trivy JSON Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
+      if: always()
       with:
         name: trivy-report
         path: trivy-report.json
@@ -185,10 +191,11 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-    
+      uses: actions/checkout@v4
+
     - name: Download all reports
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
+      continue-on-error: true
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -252,7 +259,8 @@ jobs:
         "
     
     - name: Upload Security Summary
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
+      if: always()
       with:
         name: security-summary
         path: security-summary.json
@@ -269,10 +277,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-    
+      uses: actions/checkout@v4
+
     - name: Download Docker image
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: docker-image
     
