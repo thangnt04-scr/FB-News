@@ -19,6 +19,8 @@ services:
       - key: FOOTBALL_DATA_API_KEY
         value: 714b8b0227af4ae7bec7cd46e191cf3a
       - key: FETCH_ALL_DATA
-        value: "False"
-    healthCheckPath: /
+        value: "True"
+      - key: PORT
+        value: "10000"
+    healthCheckPath: /health
 

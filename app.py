@@ -20,6 +20,58 @@ print(f"Environment: {os.getenv('FLASK_ENV', 'development')}")
 print(f"Port: {os.getenv('PORT', '5000')}")
 print("=" * 50)
 db.init_db()
+
+# Auto-populate database if empty (for Render deployment)
+def check_and_populate_database():
+    """Check if database is empty and populate if needed"""
+    try:
+        conn = db.get_db_connection()
+        cur = conn.cursor()
+
+        # Check if database has data
+        cur.execute("SELECT COUNT(*) as count FROM users")
+        user_count = cur.fetchone()[0]
+
+        cur.execute("SELECT COUNT(*) as count FROM leagues")
+        league_count = cur.fetchone()[0]
+
+        conn.close()
+
+        # If database is empty, populate it
+        if user_count == 0 or league_count == 0:
+            print("=" * 50)
+            print("⚠️  Database is empty! Auto-populating...")
+            print("=" * 50)
+
+            # Import and run populate script directly
+            try:
+                from populate_db import main as populate_main
+                populate_main()
+                print("✅ Database populated successfully!")
+            except Exception as e:
+                print(f"❌ Error populating database: {str(e)}")
+                # Fallback: create admin user at least
+                try:
+                    from create_admin import create_default_admin
+                    create_default_admin()
+                    print("✅ At least admin user created!")
+                except Exception as e2:
+                    print(f"❌ Error creating admin user: {str(e2)}")
+        else:
+            print(f"✅ Database already populated ({user_count} users, {league_count} leagues)")
+
+    except Exception as e:
+        print(f"⚠️  Error checking database: {str(e)}")
+        # Try to create admin user as fallback
+        try:
+            from create_admin import create_default_admin
+            create_default_admin()
+            print("✅ Fallback: Admin user created!")
+        except Exception as e2:
+            print(f"❌ Fallback failed: {str(e2)}")
+
+# Check and populate on startup
+check_and_populate_database()
 print("=" * 50)
 
 # Flask-Login setup
@@ -335,6 +387,35 @@ def api_delete_user(user_id):
     
     db.delete_user(user_id)
     return jsonify({'success': True})
+
+@app.route("/health")
+def health_check():
+    """Health check endpoint for Render"""
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        
+        # Check database connectivity
+        cur.execute("SELECT COUNT(*) FROM users")
+        user_count = cur.fetchone()[0]
+        
+        cur.execute("SELECT COUNT(*) FROM leagues")
+        league_count = cur.fetchone()[0]
+        
+        conn.close()
+        
+        return jsonify({
+            'status': 'healthy',
+            'database': 'connected',
+            'users': user_count,
+            'leagues': league_count,
+            'admin_available': user_count > 0
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'unhealthy',
+            'error': str(e)
+        }), 500
 
 if __name__ == "__main__":
     # Get port from environment variable or default to 5000

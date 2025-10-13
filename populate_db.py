@@ -250,15 +250,22 @@ def create_admin_user():
     cur = conn.cursor()
 
     try:
+        # Check if admin already exists
+        cur.execute("SELECT id FROM users WHERE username = 'admin'")
+        existing_admin = cur.fetchone()
+        
+        if existing_admin:
+            print("  ✅ Admin user already exists")
+            return True
+
         # Use werkzeug password hashing (same as app.py)
         from werkzeug.security import generate_password_hash
         password_hash = generate_password_hash('admin123')
 
         cur.execute('''
-            INSERT OR REPLACE INTO users (id, username, email, password_hash, role)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO users (username, email, password_hash, role)
+            VALUES (?, ?, ?, ?)
         ''', (
-            1,
             'admin',
             'admin@football.com',
             password_hash,
@@ -266,8 +273,10 @@ def create_admin_user():
         ))
         conn.commit()
         print("  ✅ Admin user created (username: admin, password: admin123)")
+        return True
     except Exception as e:
         print(f"  ❌ Error creating admin user: {str(e)}")
+        return False
     finally:
         conn.close()
 
@@ -301,6 +310,15 @@ def main():
     print("\n🔧 Initializing database...")
     init_db()
 
+    # Create admin user FIRST (critical for deployment)
+    print("\n" + "=" * 70)
+    print("CREATING ADMIN USER (PRIORITY)")
+    print("=" * 70)
+    admin_created = create_admin_user()
+    if not admin_created:
+        print("❌ CRITICAL: Failed to create admin user!")
+        return
+
     # Populate data
     print("\n" + "=" * 70)
     print("STARTING DATA POPULATION")
@@ -318,8 +336,6 @@ def main():
 
     matches_count = populate_matches()
     total += matches_count
-
-    create_admin_user()
 
     elapsed_time = time.time() - start_time
 
