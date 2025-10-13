@@ -29,49 +29,62 @@ def get_conn():
 
 @app.route("/")
 def index():
-    conn = get_conn()
-    cur = conn.cursor()
-    
-    # Lấy dữ liệu cho trang chủ
-    cur.execute("SELECT COUNT(*) as count FROM leagues")
-    leagues_count = cur.fetchone()['count']
-    
-    cur.execute("SELECT COUNT(*) as count FROM teams")
-    teams_count = cur.fetchone()['count']
-    
-    cur.execute("SELECT COUNT(*) as count FROM players")
-    players_count = cur.fetchone()['count']
-    
-    cur.execute("SELECT COUNT(*) as count FROM matches")
-    matches_count = cur.fetchone()['count']
-    
-    # Lấy danh sách leagues
-    cur.execute("SELECT * FROM leagues LIMIT 6")
-    leagues = [dict(row) for row in cur.fetchall()]
-    
-    # Lấy recent matches
-    cur.execute("""
-        SELECT m.*, l.name as league_name, 
-               t1.name as home_team, t2.name as away_team
-        FROM matches m
-        LEFT JOIN leagues l ON l.id = m.league_id
-        LEFT JOIN teams t1 ON t1.id = m.home_team_id
-        LEFT JOIN teams t2 ON t2.id = m.away_team_id
-        ORDER BY m.match_date DESC LIMIT 10
-    """)
-    recent_matches = [dict(row) for row in cur.fetchall()]
-    
-    conn.close()
-    
-    return render_template("index.html", 
-                         leagues=leagues,
-                         recent_matches=recent_matches,
-                         stats={
-                             'leagues': leagues_count,
-                             'teams': teams_count,
-                             'players': players_count,
-                             'matches': matches_count
-                         })
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+
+        # Lấy dữ liệu cho trang chủ
+        cur.execute("SELECT COUNT(*) as count FROM leagues")
+        leagues_count = cur.fetchone()['count']
+
+        cur.execute("SELECT COUNT(*) as count FROM teams")
+        teams_count = cur.fetchone()['count']
+
+        cur.execute("SELECT COUNT(*) as count FROM players")
+        players_count = cur.fetchone()['count']
+
+        cur.execute("SELECT COUNT(*) as count FROM matches")
+        matches_count = cur.fetchone()['count']
+
+        # Lấy danh sách leagues
+        cur.execute("SELECT * FROM leagues LIMIT 6")
+        leagues = [dict(row) for row in cur.fetchall()]
+
+        # Lấy recent matches
+        cur.execute("""
+            SELECT m.*, l.name as league_name,
+                   t1.name as home_team, t2.name as away_team
+            FROM matches m
+            LEFT JOIN leagues l ON l.id = m.league_id
+            LEFT JOIN teams t1 ON t1.id = m.home_team_id
+            LEFT JOIN teams t2 ON t2.id = m.away_team_id
+            ORDER BY m.match_date DESC LIMIT 10
+        """)
+        recent_matches = [dict(row) for row in cur.fetchall()]
+
+        conn.close()
+
+        return render_template("index.html",
+                             leagues=leagues,
+                             recent_matches=recent_matches,
+                             stats={
+                                 'leagues': leagues_count,
+                                 'teams': teams_count,
+                                 'players': players_count,
+                                 'matches': matches_count
+                             })
+    except Exception as e:
+        app.logger.error(f"Error in index route: {e}")
+        # Return simple page if database error
+        return render_template("index.html",
+                             leagues=[],
+                             recent_matches=[],
+                             stats={
+                                 'leagues': 0,
+                                 'teams': 0,
+                                 'players': 0,
+                                 'matches': 0
+                             })
 
 @app.route("/league/<int:league_id>")
 def league_page(league_id):
