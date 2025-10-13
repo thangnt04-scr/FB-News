@@ -18,16 +18,15 @@
 - Artifacts: `bandit.txt`, `pip-audit.json` được upload.
 
 ### 5) Triển khai lên Cloud
-- Workflow `deploy-azure.yml`: deploy image từ GHCR lên Azure Web App (Container).
-- Secrets cần có:
-  - `AZURE_CREDENTIALS` (JSON service principal)
-  - `AZURE_WEBAPP_NAME`
-  - `FLASK_SECRET_KEY`
-  - `FOOTBALL_DATA_API_KEY`
+- Render (free, dễ dùng): file `render.yaml` cho phép 1-click deploy từ repo.
+  - Tự build Dockerfile và chạy Gunicorn. Có gắn disk 1GB ở `/app/data`.
+  - Env: `FLASK_SECRET_KEY` (generate), `CREATE_DEFAULT_USERS=1`, `FOOTBALL_DATA_API_KEY` (nếu dùng), `PORT=5000`.
+- Azure (tuỳ chọn): Workflow `deploy-azure.yml` deploy image từ GHCR lên Azure Web App (Container).
+  - Secrets: `AZURE_CREDENTIALS`, `AZURE_WEBAPP_NAME`, `FLASK_SECRET_KEY`, `FOOTBALL_DATA_API_KEY`.
 
 ### 6) Cách reproduce local
 ```bash
-# Build & run
+# Build & run (Gunicorn)
 docker compose up -d --build
 
 # Mở http://localhost:5000
@@ -39,3 +38,8 @@ bash scripts/scan.sh
 make install-dev
 make scan-all
 ```
+
+### 7) Deploy lên Render (1-click)
+1. Push repo lên GitHub.
+2. Trên Render: chọn "New → Blueprint" và trỏ tới repo (tự nhận `render.yaml`).
+3. Xác nhận env vars mặc định. Deploy và mở URL.

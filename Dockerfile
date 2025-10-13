@@ -27,7 +27,8 @@ USER appuser
 # Runtime env
 ENV FLASK_SECRET_KEY=change-me-in-prod \
     FOOTBALL_DB=/app/data/footballinfor.db \
-    PYTHONPATH=/app
+    PYTHONPATH=/app \
+    GUNICORN_WORKERS=1
 
 # Create data dir
 RUN mkdir -p /app/data
@@ -38,6 +39,6 @@ EXPOSE 5000
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD python -c "import requests; import sys;\n\nimport os;\nurl='http://localhost:5000';\n\nimport urllib.request as u;\n\ntry:\n    u.urlopen(url, timeout=3)\n    sys.exit(0)\nexcept Exception:\n    sys.exit(1)" || exit 1
 
-# Entrypoint initializes DB and creates admin if needed, then runs app
+# Entrypoint initializes DB and creates admin if needed, then runs app via Gunicorn
 ENTRYPOINT ["/app/scripts/entrypoint.sh"]
-CMD ["python", "-u", "app.py"]
+CMD ["sh", "-lc", "exec gunicorn -w ${GUNICORN_WORKERS:-1} -b 0.0.0.0:${PORT:-5000} app:app"]
