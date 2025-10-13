@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  web:
+    build: .
+    image: football-info:local
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    environment:
+      - HOST=0.0.0.0
+      - PORT=5000
+      - FLASK_DEBUG=true
+      - CREATE_DEFAULT_USERS=1
+      - FOOTBALL_DB=/data/footballinfor.db
+    volumes:
+      - app-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.socket(); s.settimeout(2); s.connect(('127.0.0.1', 5000)); s.close()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+volumes:
+  app-data:
