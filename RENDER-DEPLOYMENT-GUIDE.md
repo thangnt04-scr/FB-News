@@ -98,34 +98,232 @@ Chỉ cần:
 
 ## 🎯 BƯỚC 3: TEST DEPLOYMENT
 
-### **Test thủ công:**
+### **A. Kiểm tra Build Logs trên Render**
+
+**Sau khi tạo service, kiểm tra logs:**
+
+1. **Mở Render Dashboard:**
+   ```
+   https://dashboard.render.com/
+   ```
+
+2. **Click vào service `fb-news`**
+
+3. **Click tab "Logs"**
+
+4. **Kiểm tra build process:**
+   ```
+   Expected logs:
+   ==> Building...
+   ==> Running build command: chmod +x build.sh && ./build.sh
+   ==> Installing dependencies...
+   ==> Collecting Flask==3.0.0
+   ==> Collecting requests==2.31.0
+   ==> ...
+   ==> Initializing database...
+   ==> Build completed successfully!
+   ==> Starting service...
+   ==> [INFO] Starting gunicorn 21.2.0
+   ==> [INFO] Listening at: http://0.0.0.0:10000
+   ==> Service is live!
+   ```
+
+5. **Nếu thấy lỗi:**
+   ```
+   ERROR: no such table: leagues
+   ```
+   → Database chưa được init. Cần redeploy với build.sh đúng.
+
+---
+
+### **B. Test Service URL**
+
+**Sau khi service live:**
 
 ```powershell
-# 1. Commit và push code
-git add .
-git commit -m "Deploy to Render"
-git push origin cicd-pipeline
+# 1. Lấy Service URL từ Render Dashboard
+# URL có dạng: https://fb-news-XXXX.onrender.com
 
-# 2. Kiểm tra GitHub Actions
-# Mở: https://github.com/thangnt04-scr/FB-News/actions
+# 2. Test homepage
+curl https://fb-news-k8za.onrender.com
 
-# 3. Đợi workflow hoàn thành (5-10 phút)
+# Expected: HTML response với status 200
 
-# 4. Kiểm tra Render Dashboard
-# Mở: https://dashboard.render.com/
-
-# 5. Test URL
-curl https://fb-news-XXXX.onrender.com
-# Hoặc mở browser
+# 3. Test trong browser
+start https://fb-news-k8za.onrender.com
 ```
 
-### **Test tự động (GitHub Actions):**
+**Expected Result:**
+- ✅ Trang chủ hiển thị
+- ✅ Có thống kê: Leagues, Teams, Players, Matches
+- ✅ Không có lỗi "no such table"
 
-Workflow sẽ tự động:
-1. ✅ Chạy security scans (Bandit, Safety, Trivy)
-2. ✅ Build Docker image
-3. ✅ Generate security reports
-4. ✅ Trigger Render deployment (nếu có secrets)
+---
+
+### **C. Test API Endpoints**
+
+```powershell
+# Test leagues API
+curl https://fb-news-k8za.onrender.com/api/leagues
+
+# Expected: JSON array of leagues
+# [{"id": 1, "name": "Premier League", ...}, ...]
+
+# Test teams API
+curl https://fb-news-k8za.onrender.com/api/teams
+
+# Expected: JSON array of teams
+
+# Test players API
+curl https://fb-news-k8za.onrender.com/api/players
+
+# Expected: JSON array of players
+```
+
+---
+
+### **D. Test Authentication**
+
+```powershell
+# 1. Mở trang login
+start https://fb-news-k8za.onrender.com/login
+
+# 2. Thử đăng ký user mới
+# Click "Register" → Điền form → Submit
+
+# 3. Thử đăng nhập
+# Username: test
+# Password: test123
+
+# 4. Kiểm tra profile
+# Sau khi login → Click "Profile"
+```
+
+---
+
+### **E. Troubleshooting Common Errors**
+
+#### **Error 1: "no such table: leagues"**
+
+**Nguyên nhân:** Database chưa được khởi tạo
+
+**Giải pháp:**
+```bash
+# 1. Kiểm tra build.sh có được chạy không
+# Xem logs: "Running build command: chmod +x build.sh && ./build.sh"
+
+# 2. Nếu không thấy, update render.yaml:
+buildCommand: chmod +x build.sh && ./build.sh
+
+# 3. Trigger manual deploy:
+# Render Dashboard → Service → Manual Deploy → Deploy latest commit
+```
+
+#### **Error 2: "Port scan timeout"**
+
+**Nguyên nhân:** App không start được hoặc crash
+
+**Giải pháp:**
+```bash
+# 1. Kiểm tra logs để tìm lỗi
+# 2. Thường do:
+#    - Database init failed
+#    - Missing dependencies
+#    - Wrong PORT environment variable
+
+# 3. Verify environment variables:
+PORT=10000
+FLASK_ENV=production
+PYTHON_VERSION=3.11.0
+```
+
+#### **Error 3: "Application failed to start"**
+
+**Nguyên nhân:** Lỗi trong code hoặc dependencies
+
+**Giải pháp:**
+```bash
+# 1. Kiểm tra requirements.txt
+# 2. Test local trước:
+docker-compose up -d
+curl http://localhost:5000
+
+# 3. Nếu local OK, kiểm tra Render logs
+```
+
+---
+
+### **F. Verify Deployment Success**
+
+**Checklist:**
+- [ ] ✅ Build logs không có lỗi
+- [ ] ✅ Service status: "Live" (màu xanh)
+- [ ] ✅ Homepage accessible
+- [ ] ✅ API endpoints return data
+- [ ] ✅ Login/Register works
+- [ ] ✅ No "no such table" errors
+
+**Nếu tất cả ✅:**
+```
+🎉 DEPLOYMENT SUCCESSFUL!
+Service URL: https://fb-news-k8za.onrender.com
+```
+
+---
+
+### **G. Monitor Service**
+
+**Render Dashboard:**
+```
+1. Metrics tab:
+   - CPU usage
+   - Memory usage
+   - Request count
+
+2. Logs tab:
+   - Real-time logs
+   - Error tracking
+
+3. Events tab:
+   - Deployment history
+   - Service restarts
+```
+
+**Free Tier Notes:**
+- ⚠️ Service sleeps after 15 min inactivity
+- ⚠️ Cold start: 30-60 seconds
+- ⚠️ SQLite data lost on restart (use PostgreSQL for persistence)
+
+---
+
+### **H. Test Auto-Deployment (After GitHub Secrets Setup)**
+
+```powershell
+# 1. Make a small change
+echo "# Test auto-deploy" >> README.md
+
+# 2. Commit and push
+git add README.md
+git commit -m "Test auto-deployment"
+git push origin cicd-pipeline
+
+# 3. Check GitHub Actions
+# https://github.com/thangnt04-scr/FB-News/actions
+
+# 4. Verify deployment triggered on Render
+# Dashboard → Events tab → Should see new deployment
+
+# 5. Wait for deployment to complete
+
+# 6. Test URL again
+curl https://fb-news-k8za.onrender.com
+```
+
+**Expected:**
+- ✅ GitHub Actions runs successfully
+- ✅ Render deployment triggered automatically
+- ✅ Service updated with new code
+- ✅ No downtime (rolling deployment)
 
 ---
 
