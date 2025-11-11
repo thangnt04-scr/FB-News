@@ -1,0 +1,571 @@
+C:\Users\tatth\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\__init__.py:102: RequestsDependencyWarning: urllib3 (1.26.20) or chardet (5.2.0)/charset_normalizer (2.0.9) doesn't match a supported version!
+  warnings.warn("urllib3 ({}) or chardet ({})/charset_normalizer ({}) doesn't match a supported "
+
+
++===========================================================================================================================================================================================+
+
+
+DEPRECATED: this command (`check`) has been DEPRECATED, and will be unsupported beyond 01 June 2024.
+
+
+We highly encourage switching to the new `scan` command which is easier to use, more powerful, and can be set up to mimic the deprecated command if required.
+
+
++===========================================================================================================================================================================================+
+
+
++==============================================================================+
+
+                               /$$$$$$            /$$
+                              /$$__  $$          | $$
+           /$$$$$$$  /$$$$$$ | $$  \__//$$$$$$  /$$$$$$   /$$   /$$
+          /$$_____/ |____  $$| $$$$   /$$__  $$|_  $$_/  | $$  | $$
+         |  $$$$$$   /$$$$$$$| $$_/  | $$$$$$$$  | $$    | $$  | $$
+          \____  $$ /$$__  $$| $$    | $$_____/  | $$ /$$| $$  | $$
+          /$$$$$$$/|  $$$$$$$| $$    |  $$$$$$$  |  $$$$/|  $$$$$$$
+         |_______/  \_______/|__/     \_______/   \___/   \____  $$
+                                                          /$$  | $$
+                                                         |  $$$$$$/
+  by safetycli.com                                        \______/
+
++==============================================================================+
+
+ REPORT 
+
+  Safety v3.6.2 is scanning for Vulnerabilities...
+  Scanning dependencies in your environment:
+
+  -> c:\users\tatth\appdata\roaming\python\python313\site-packages
+  -> C:\Users\tatth\AppData\Roaming\Python\Python313\site-packages\Pythonwin
+  -> C:\Users\tatth\AppData\Roaming\Python\Python313\site-packages\win32\lib
+  -> C:\Users\tatth\AppData\Local\Programs\Python\Python313\Scripts\safety.exe
+  -> C:\Users\tatth\AppData\Local\Programs\Python\Python313\DLLs
+  -> C:\Users\tatth\AppData\Local\Programs\Python\Python313
+  -> C:\Users\tatth\AppData\Local\Programs\Python\Python313\Lib\site-packages
+  -> c:\users\tatth\appdata\local\programs\python\python313\lib\site-packages
+  -> C:\Users\tatth\AppData\Local\Programs\Python\Python313\python313.zip
+  -> c:\users\tatth\appdata\local\programs\python\python313\lib\site-
+  packages\setuptools\_vendor
+  -> C:\Users\tatth\AppData\Local\Programs\Python\Python313\Lib\site-
+  packages\setuptools\_vendor
+  -> C:\Users\tatth\AppData\Local\Programs\Python\Python313\Lib
+  -> C:\Users\tatth\AppData\Roaming\Python\Python313\site-packages
+  -> C:\Users\tatth\AppData\Roaming\Python\Python313\site-packages\win32
+
+  Using open-source vulnerability database
+  Found and scanned 228 packages
+  Timestamp 2025-10-14 00:30:09
+  33 vulnerabilities reported
+  0 vulnerabilities ignored
+
++==============================================================================+
+ VULNERABILITIES REPORTED 
++==============================================================================+
+
+-> Vulnerability found in urllib3 version 1.26.20
+   Vulnerability ID: 77744
+   Affected spec: <2.5.0
+   ADVISORY: urllib3 is a user-friendly HTTP client library for
+   Python. Prior to 2.5.0, it is possible to disable redirects for all
+   requests by instantiating a PoolManager and specifying retries in a way
+   that disable redirects. By default, requests and botocore users are not
+   affected. An application attempting to mitigate SSRF or open redirect
+   vulnerabilities by disabling redirects at the PoolManager level will
+   remain vulnerable. This issue has been patched in version 2.5.0.
+   CVE-2025-50181
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/77744/97c
+   To ignore this vulnerability, use PyUp vulnerability id 77744 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in torch version 2.6.0
+   Vulnerability ID: 76769
+   Affected spec: <=2.6.0
+   ADVISORY: *Disputed* A vulnerability, which was classified as
+   problematic, was found in PyTorch 2.6.0. Affected is the function
+   torch.nn.functional.ctc_loss of the file aten/src/ATen/native/LossCTC.cpp.
+   The manipulation leads to denial of service. An attack has to be
+   approached locally. The exploit has been disclosed to the public and may
+   be used. The name of the patch is
+   46fc5d8e360127361211cb237d5f9eef0223e567. It is recommended to apply a
+   patch to fix this issue.
+   CVE-2025-3730
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/76769/97c
+   To ignore this vulnerability, use PyUp vulnerability id 76769 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in torch version 2.6.0
+   Vulnerability ID: 78828
+   Affected spec: <2.7.1-rc1
+   ADVISORY: Affected versions of the PyTorch package are vulnerable
+   to Denial of Service (DoS) due to improper handling in the MKLDNN pooling
+   implementation. The torch.mkldnn_max_pool2d function fails to properly
+   validate input parameters, allowing crafted inputs to trigger resource
+   exhaustion or crashes in the underlying MKLDNN library. An attacker with
+   local access can exploit this vulnerability by passing specially crafted
+   tensor dimensions or parameters to the max pooling function, causing the
+   application to become unresponsive or crash.
+   CVE-2025-2953
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/78828/97c
+   To ignore this vulnerability, use PyUp vulnerability id 78828 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in starlette version 0.46.1
+   Vulnerability ID: 78279
+   Affected spec: <0.47.2
+   ADVISORY: Starlette is a lightweight ASGI (Asynchronous Server
+   Gateway Interface) framework/toolkit, designed for building async web
+   services in Python. In versions 0.47.1 and below, when parsing a multi-
+   part form with large files (greater than the default max spool size)
+   starlette will block the main thread to roll the file over to disk. This
+   blocks the event thread which means the application can't accept new
+   connections. The UploadFile code has a minor bug where instead of just
+   checking for self._in_memory, the logic should also check if the
+   additional bytes will cause a rollover. The vulnerability is fixed in
+   version 0.47.2.
+   CVE-2025-54121
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/78279/97c
+   To ignore this vulnerability, use PyUp vulnerability id 78279 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in setuptools version 75.8.0
+   Vulnerability ID: 76752
+   Affected spec: <78.1.1
+   ADVISORY: Affected versions of Setuptools are vulnerable to Path
+   Traversal via PackageIndex.download(). The impact is Arbitrary File
+   Overwrite: An attacker would be allowed to write files to arbitrary
+   locations on the filesystem with the permissions of the process running
+   the Python code, which could escalate to RCE depending on the context.
+   CVE-2025-47273
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/76752/97c
+   To ignore this vulnerability, use PyUp vulnerability id 76752 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in requests version 2.26.0
+   Vulnerability ID: 58755
+   Affected spec: >=2.3.0,<2.31.0
+   ADVISORY: Affected versions of Requests are vulnerable to proxy
+   credential leakage. When redirected to an HTTPS endpoint, the Proxy-
+   Authorization header is forwarded to the destination server due to the use
+   of rebuild_proxies to reattach the header. This may allow a malicious
+   actor to exfiltrate sensitive information.
+   CVE-2023-32681
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/58755/97c
+   To ignore this vulnerability, use PyUp vulnerability id 58755 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in requests version 2.26.0
+   Vulnerability ID: 77680
+   Affected spec: <2.32.4
+   ADVISORY: Requests is an HTTP library. Due to a URL parsing issue,
+   Requests releases prior to 2.32.4 may leak .netrc credentials to third
+   parties for specific maliciously-crafted URLs. Users should upgrade to
+   version 2.32.4 to receive a fix. For older versions of Requests, use of
+   the .netrc file can be disabled with `trust_env=False` on one's Requests
+   Session.
+   CVE-2024-47081
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/77680/97c
+   To ignore this vulnerability, use PyUp vulnerability id 77680 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in requests version 2.26.0
+   Vulnerability ID: 71064
+   Affected spec: <2.32.2
+   ADVISORY: Affected versions of Requests, when making requests
+   through a Requests `Session`, if the first request is made with
+   `verify=False` to disable cert verification, all subsequent requests to
+   the same host will continue to ignore cert verification regardless of
+   changes to the value of `verify`. This behavior will continue for the
+   lifecycle of the connection in the connection pool. Requests 2.32.0 fixes
+   the issue, but versions 2.32.0 and 2.32.1 were yanked due to conflicts
+   with CVE-2024-35195 mitigation.
+   CVE-2024-35195
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/71064/97c
+   To ignore this vulnerability, use PyUp vulnerability id 71064 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in pymongo version 4.6.0
+   Vulnerability ID: 70626
+   Affected spec: <4.6.3
+   ADVISORY: Versions of the package pymongo before 4.6.3 are
+   vulnerable to Out-of-bounds Read in the bson module. Using the crafted
+   payload the attacker could force the parser to deserialize unmanaged
+   memory. The parser tries to interpret bytes next to buffer and throws an
+   exception with string. If the following bytes are not printable UTF-8 the
+   parser throws an exception with a single byte.
+   CVE-2024-5629
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/70626/97c
+   To ignore this vulnerability, use PyUp vulnerability id 70626 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in paddlepaddle version 3.2.0
+   Vulnerability ID: 71831
+   Affected spec: >=0
+   ADVISORY: paddlepaddle/paddle affected versions allow arbitrary
+   file read via paddle.vision.ops.read_file.
+   CVE-2024-1603
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/71831/97c
+   To ignore this vulnerability, use PyUp vulnerability id 71831 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in keras version 3.8.0
+   Vulnerability ID: 78701
+   Affected spec: >=3.0.0,<3.11.0
+   ADVISORY: Affected versions of the keras package are vulnerable to
+   Deserialization of Untrusted Data due to insufficient enforcement of safe
+   deserialization rules for Lambda layers which allows invocation of
+   internal functions. The keras.models.load_model path, even with
+   safe_mode=True, permits a Lambda layer to reference approved internal
+   modules such as keras.utils and call get_file with attacker-controlled
+   arguments via the deserializer in keras/src/saving/serialization_lib.py,
+   because the mitigation whitelists entire modules rather than specific safe
+   callables. An unauthenticated attacker can supply a crafted .keras model
+   and, when a user loads it, coerce keras.utils.get_file to download and
+   write arbitrary files to attacker-chosen locations—enabling Arbitrary File
+   Overwrite and frequently Remote Code Execution (e.g., by overwriting
+   ~/.ssh/authorized_keys).
+   CVE-2025-8747
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/78701/97c
+   To ignore this vulnerability, use PyUp vulnerability id 78701 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in keras version 3.8.0
+   Vulnerability ID: 75720
+   Affected spec: <3.9.0
+   ADVISORY: Affected versions of Keras are potentially vulnerable to
+   Code Execution due to pickle loading npz files.
+   PVE-2025-75720
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/75720/97c
+   To ignore this vulnerability, use PyUp vulnerability id 75720 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in keras version 3.8.0
+   Vulnerability ID: 76312
+   Affected spec: >=3.0.0,<3.9.0
+   ADVISORY: Affected versions of the Keras package are vulnerable to
+   Arbitrary Code Execution through the Model.load_model() function, even
+   when safe_mode=True is enabled. The deserialization process fails to
+   properly validate module imports in config.json files within .keras
+   archives, allowing arbitrary Python modules and functions to be loaded and
+   executed. A remote attacker can exploit this vulnerability by crafting a
+   malicious .keras model archive with a modified config.json file that
+   specifies arbitrary Python code to execute, resulting in complete system
+   compromise during model loading.The vulnerability was fixed by
+   implementing strict validation in the deserialization process. The fix
+   restricts module imports to only Keras internal modules (keras.src.*) and
+   adds type checking to ensure deserialized objects are valid Operation
+   instances before processing.
+   CVE-2025-1550
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/76312/97c
+   To ignore this vulnerability, use PyUp vulnerability id 76312 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in idna version 3.3
+   Vulnerability ID: 67895
+   Affected spec: <3.7
+   ADVISORY: Affected versions of Idna are vulnerable to Denial Of
+   Service via the idna.encode(), where a specially crafted argument could
+   lead to significant resource consumption. In version 3.7, this function
+   has been updated to reject such inputs efficiently, minimizing resource
+   use. A practical workaround involves enforcing a maximum domain name
+   length of 253 characters before encoding, as the vulnerability is
+   triggered by unusually large inputs that normal operations wouldn't
+   encounter.
+   CVE-2024-3651
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/67895/97c
+   To ignore this vulnerability, use PyUp vulnerability id 67895 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in gunicorn version 20.1.0
+   Vulnerability ID: 71600
+   Affected spec: <22.0.0
+   ADVISORY: Gunicorn fails to properly validate Transfer-Encoding
+   headers, leading to HTTP Request Smuggling (HRS) vulnerabilities. By
+   crafting requests with conflicting Transfer-Encoding headers, attackers
+   can bypass security restrictions and access restricted endpoints. This
+   issue is due to Gunicorn's handling of Transfer-Encoding headers, where it
+   incorrectly processes requests with multiple, conflicting Transfer-
+   Encoding headers, treating them as chunked regardless of the final
+   encoding specified. This vulnerability allows for a range of attacks
+   including cache poisoning, session manipulation, and data exposure.
+   CVE-2024-1135
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/71600/97c
+   To ignore this vulnerability, use PyUp vulnerability id 71600 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in gunicorn version 20.1.0
+   Vulnerability ID: 72780
+   Affected spec: <21.2.0
+   ADVISORY: A time-based vulnerability in Gunicorn affected versions
+   allows an attacker to disrupt service by manipulating the system clock,
+   causing premature worker timeouts and potential denial-of-service (DoS)
+   conditions. The issue stems from the use of time.time() in the worker
+   timeout logic, which can be exploited if an attacker gains the ability to
+   change the system time.
+   PVE-2024-72780
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/72780/97c
+   To ignore this vulnerability, use PyUp vulnerability id 72780 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in gunicorn version 20.1.0
+   Vulnerability ID: 76244
+   Affected spec: <23.0.0
+   ADVISORY: Gunicorn version 21.2.0 does not properly validate the
+   value of the 'Transfer-Encoding' header as specified in the RFC standards,
+   which leads to the default fallback method of 'Content-Length,' making it
+   vulnerable to TE.CL request smuggling. This vulnerability can lead to
+   cache poisoning, data exposure, session manipulation, SSRF, XSS, DoS, data
+   integrity compromise, security bypass, information leakage, and business
+   logic abuse.
+   CVE-2024-6827
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/76244/97c
+   To ignore this vulnerability, use PyUp vulnerability id 76244 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in dnspython version 2.4.2
+   Vulnerability ID: 65401
+   Affected spec: <2.6.0
+   ADVISORY: Dnspython affected versions are vulnerable to a DoS
+   vulnerability highlighted in the "TuDoor" paper, where spoofed DNS
+   responses could disrupt service. The update prevents denial of service by
+   ignoring malicious packets, allowing the resolver to wait for valid
+   responses until a query's timeout. This mitigation ensures continued
+   service despite attempted attacks, enhancing the resolver's reliability
+   and security.
+   CVE-2023-29483
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/65401/97c
+   To ignore this vulnerability, use PyUp vulnerability id 65401 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in werkzeug version 2.0.2
+   Vulnerability ID: 62019
+   Affected spec: <2.3.8
+   ADVISORY: Werkzeug 3.0.1 and 2.3.8 include a security fix: Slow
+   multipart parsing for large parts potentially enabling DoS attacks.https:/
+   /github.com/pallets/werkzeug/commit/b1916c0c083e0be1c9d887ee2f3d696922bfc5
+   c1
+   PVE-2023-62019
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/62019/97c
+   To ignore this vulnerability, use PyUp vulnerability id 62019 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in werkzeug version 2.0.2
+   Vulnerability ID: 71595
+   Affected spec: <=2.3.7
+   ADVISORY: Werkzeug is a comprehensive WSGI web application
+   library. If an upload of a file that starts with CR or LF and then is
+   followed by megabytes of data without these characters: all of these bytes
+   are appended chunk by chunk into internal bytearray and lookup for
+   boundary is performed on growing buffer. This allows an attacker to cause
+   a denial of service by sending crafted multipart data to an endpoint that
+   will parse it. The amount of CPU time required can block worker processes
+   from handling legitimate requests.
+   CVE-2023-46136
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/71595/97c
+   To ignore this vulnerability, use PyUp vulnerability id 71595 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in werkzeug version 2.0.2
+   Vulnerability ID: 53326
+   Affected spec: <2.2.3
+   ADVISORY: Werkzeug 2.2.3 includes a fix for CVE-2023-23934:
+   Browsers may allow "nameless" cookies that look like '=value' instead of
+   'key=value'. A vulnerable browser may allow a compromised application on
+   an adjacent subdomain to exploit this to set a cookie like '=__Host-
+   test=bad' for another subdomain. Werkzeug prior to 2.2.3 will parse the
+   cookie '=__Host-test=bad' as __Host-test=bad'. If a Werkzeug application
+   is running next to a vulnerable or malicious subdomain which sets such a
+   cookie using a vulnerable browser, the Werkzeug application will see the
+   bad cookie value but the valid cookie
+   key.https://github.com/pallets/werkzeug/security/advisories/GHSA-
+   px8h-6qxv-m22q
+   CVE-2023-23934
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/53326/97c
+   To ignore this vulnerability, use PyUp vulnerability id 53326 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in werkzeug version 2.0.2
+   Vulnerability ID: 53325
+   Affected spec: <2.2.3
+   ADVISORY: Werkzeug 2.2.3 includes a fix for CVE-2023-25577: Prior
+   to version 2.2.3, Werkzeug's multipart form data parser will parse an
+   unlimited number of parts, including file parts. Parts can be a small
+   amount of bytes, but each requires CPU time to parse and may use more
+   memory as Python data. If a request can be made to an endpoint that
+   accesses 'request.data', 'request.form', 'request.files', or
+   'request.get_data(parse_form_data=False)', it can cause unexpectedly high
+   resource usage. This allows an attacker to cause a denial of service by
+   sending crafted multipart data to an endpoint that will parse it. The
+   amount of CPU time required can block worker processes from handling
+   legitimate requests. The amount of RAM required can trigger an out of
+   memory kill of the process. Unlimited file parts can use up memory and
+   file handles. If many concurrent requests are sent continuously, this can
+   exhaust or kill all available
+   workers.https://github.com/pallets/werkzeug/security/advisories/GHSA-
+   xg9f-g7g7-2323
+   CVE-2023-25577
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/53325/97c
+   To ignore this vulnerability, use PyUp vulnerability id 53325 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in werkzeug version 2.0.2
+   Vulnerability ID: 73969
+   Affected spec: <3.0.6
+   ADVISORY: Affected versions of Werkzeug are vulnerable to Path
+   Traversal (CWE-22) on Windows systems running Python versions below 3.11.
+   The safe_join() function failed to properly detect certain absolute paths
+   on Windows, allowing attackers to potentially access files outside the
+   intended directory. An attacker could craft special paths starting with
+   "/" that bypass the directory restrictions on Windows systems. The
+   vulnerability exists in the safe_join() function which relied solely on
+   os.path.isabs() for path validation. This is exploitable on Windows
+   systems by passing paths starting with "/" to safe_join(). To remediate,
+   upgrade to the latest version which includes additional path validation
+   checks. NOTE: This vulnerability specifically affects Windows systems
+   running Python versions below 3.11 where ntpath.isabs() behavior differs.
+   CVE-2024-49766
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/73969/97c
+   To ignore this vulnerability, use PyUp vulnerability id 73969 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in werkzeug version 2.0.2
+   Vulnerability ID: 73889
+   Affected spec: <3.0.6
+   ADVISORY: Affected versions of Werkzeug are potentially vulnerable
+   to resource exhaustion when parsing file data in forms. Applications using
+   'werkzeug.formparser.MultiPartParser' to parse 'multipart/form-data'
+   requests (e.g. all flask applications) are vulnerable to a relatively
+   simple but effective resource exhaustion (denial of service) attack. A
+   specifically crafted form submission request can cause the parser to
+   allocate and block 3 to 8 times the upload size in main memory. There is
+   no upper limit; a single upload at 1 Gbit/s can exhaust 32 GB of RAM in
+   less than 60 seconds.
+   CVE-2024-49767
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/73889/97c
+   To ignore this vulnerability, use PyUp vulnerability id 73889 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in werkzeug version 2.0.2
+   Vulnerability ID: 71594
+   Affected spec: <3.0.3
+   ADVISORY: Werkzeug is a comprehensive WSGI web application
+   library. The debugger in affected versions of Werkzeug can allow an
+   attacker to execute code on a developer's machine under some
+   circumstances. This requires the attacker to get the developer to interact
+   with a domain and subdomain they control, and enter the debugger PIN, but
+   if they are successful it allows access to the debugger even if it is only
+   running on localhost. This also requires the attacker to guess a URL in
+   the developer's application that will trigger the debugger.
+   CVE-2024-34069
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/71594/97c
+   To ignore this vulnerability, use PyUp vulnerability id 71594 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in sqlalchemy version 1.4.27
+   Vulnerability ID: 51668
+   Affected spec: <2.0.0b1
+   ADVISORY: Sqlalchemy 2.0.0b1 avoids leaking cleartext passwords to
+   the open for careless uses of str(engine.URL()) in logs and
+   prints.https://github.com/sqlalchemy/sqlalchemy/pull/8563
+   PVE-2022-51668
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/51668/97c
+   To ignore this vulnerability, use PyUp vulnerability id 51668 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in flask-cors version 4.0.0
+   Vulnerability ID: 76242
+   Affected spec: <4.0.1
+   ADVISORY: Affected versions of the flask-cors package are
+   vulnerable to Improper Input Validation due to inconsistent URL path
+   handling when processing the '+' character. The package incorrectly uses
+   the unquote_plus function on request.path, which converts '+' characters
+   to spaces, resulting in path normalization errors that prevent proper CORS
+   policy matching for endpoints containing '+' symbols. An attacker can
+   exploit this vulnerability by accessing endpoints with '+' characters in
+   their paths to bypass intended CORS restrictions or cause legitimate
+   cross-origin requests to be incorrectly blocked, potentially exposing
+   sensitive data to unauthorized origins or disrupting application
+   functionality.
+   CVE-2024-6844
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/76242/97c
+   To ignore this vulnerability, use PyUp vulnerability id 76242 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in flask-cors version 4.0.0
+   Vulnerability ID: 76241
+   Affected spec: <4.0.1
+   ADVISORY: Affected versions of the flask-cors package are
+   vulnerable to Improper Input Validation due to flawed regex pattern
+   prioritization in path matching logic. The package incorrectly prioritizes
+   longer regex patterns over more specific ones when determining CORS
+   policies for endpoints, causing less restrictive CORS configurations to be
+   applied to sensitive paths that should have stricter access controls. An
+   attacker can exploit this vulnerability by making cross-origin requests to
+   sensitive endpoints that inadvertently match broader regex patterns,
+   bypassing intended CORS restrictions and potentially accessing
+   confidential data or executing unauthorized actions from untrusted
+   origins.
+   CVE-2024-6839
+   For more information about this vulnerability, visit
+   https://data.safetycli.com/v/76241/97c
+   To ignore this vulnerability, use PyUp vulnerability id 76241 in safety’s
+   ignore command-line argument or add the ignore to your safety policy file.
+
+
+-> Vulnerability found in flask-cors version 4.0.0
+   Vulnerability ID: 76237
+   Affected spec: <4.0.1
+   ADVISORY: Unhandled exception happened: 'charmap' codec can't encode character '\u2011' in position 30: character maps to <undefined>

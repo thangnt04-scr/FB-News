@@ -1,14 +1,26 @@
-﻿services:
+services:
   - type: web
     name: fb-news
-    env: python
+    runtime: python
     region: singapore
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: python app.py
+    branch: cicd-pipeline
+    buildCommand: chmod +x build.sh && ./build.sh
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: RENDER
+        value: "true"
+      - key: FOOTBALL_DATA_API_KEY
+        value: 714b8b0227af4ae7bec7cd46e191cf3a
+      - key: FETCH_ALL_DATA
+        value: "True"
       - key: PORT
-        value: 10000
+        value: "10000"
+    healthCheckPath: /health
 
