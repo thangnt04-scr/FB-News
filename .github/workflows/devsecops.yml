@@ -280,7 +280,7 @@ jobs:
     if: github.ref == 'refs/heads/cicd-pipeline' && github.event_name == 'push'
     environment:
       name: production
-      url: https://fb-news.onrender.com
+      url: https://fb-news-rlrs.onrender.com/
 
     steps:
     - name: Checkout code
