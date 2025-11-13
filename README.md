@@ -295,11 +295,3 @@ graph LR
 3. Commit changes
 4. Push to branch
 5. Create Pull Request
-
-## 📄 License
-
-MIT License - Xem file LICENSE để biết thêm chi tiết.
-
----
-
-**🎉 Chúc bạn sử dụng hệ thống hiệu quả!**
